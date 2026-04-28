@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Negotiation Study</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#edeae3;--surface:#fff;--s2:#f5f3ee;
+  --b:rgba(0,0,0,.09);--b2:rgba(0,0,0,.15);
+  --acc:#1c4ed8;--accl:#dbeafe;
+  --sbg:#1c4ed8;--stxt:#fff;
+  --bbg:#fff;--btxt:#111827;
+  --sys:#9ca3af;--mut:#6b7280;--pri:#111827;
+  --pd:#1c4ed8;--pc:#93c5fd;--pe:#e5e7eb;
+  --font:"DM Sans",system-ui,sans-serif;
+  --mono:"DM Mono",monospace;
+  --r:16px;--rb:18px
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--pri)}
+body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32px;min-height:100%}
+.rbar{width:100%;max-width:600px;background:#111;border-radius:8px;padding:9px 14px;margin-bottom:10px;font-family:var(--mono);font-size:11px;color:#999;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rtag{background:#22c55e;color:#111;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+.rbar label{color:#22c55e;white-space:nowrap}
+.rbar select{background:#1a1a1a;color:#ddd;border:1px solid #333;border-radius:4px;padding:3px 8px;font-family:var(--mono);font-size:11px;cursor:pointer;outline:none}
+.rpill{margin-left:auto;background:#1a1a1a;color:#22c55e;border:1px solid #2a2a2a;border-radius:20px;padding:2px 9px;font-size:10px;white-space:nowrap}
+.card{width:100%;max-width:600px;background:var(--surface);border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.06);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.hdr{background:var(--surface);border-bottom:1px solid var(--b);padding:14px 18px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+.av{width:38px;height:38px;border-radius:50%;background:var(--accl);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;flex-shrink:0;position:relative;border:1.5px solid var(--b2)}
+.av::after{content:"";position:absolute;bottom:0;right:0;width:9px;height:9px;background:#22c55e;border-radius:50%;border:2px solid white}
+.hinfo{flex:1;min-width:0}
+.hname{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hsub{font-size:11.5px;color:var(--mut);margin-top:1px}
+.hbadge{font-family:var(--mono);font-size:10px;color:var(--mut);background:var(--s2);border:1px solid var(--b);border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0}
+.pbar{background:var(--surface);border-bottom:1px solid var(--b);padding:7px 18px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.plbl{font-family:var(--mono);font-size:10px;color:var(--mut);white-space:nowrap}
+.pips{display:flex;gap:4px;flex:1}
+.pip{height:4px;flex:1;background:var(--pe);border-radius:2px;transition:background .35s}
+.pip.done{background:var(--pd)}.pip.cur{background:var(--pc)}
+.plbl2{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--acc);white-space:nowrap;min-width:36px;text-align:right}
+.msgs{flex:1;overflow-y:auto;padding:16px 14px;background:var(--s2);display:flex;flex-direction:column;gap:8px;min-height:260px;max-height:420px;scroll-behavior:smooth}
+.msgs::-webkit-scrollbar{width:4px}.msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px}
+.connecting{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 0;background:var(--s2)}
+.spinner{width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:var(--acc);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ctxt{font-size:13px;color:var(--mut)}
+.row{display:flex;gap:7px;align-items:flex-end;animation:rise .2s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.row.buyer{flex-direction:row}.row.seller{flex-direction:row-reverse}
+.mav{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;border:1.5px solid var(--b);align-self:flex-end}
+.mav.b{background:var(--accl);color:var(--acc)}.mav.s{background:#fef3c7;color:#b45309}
+.grp{display:flex;flex-direction:column;max-width:calc(100% - 70px);min-width:44px}
+.row.seller .grp{align-items:flex-end}
+.bbl{padding:9px 13px;border-radius:var(--rb);font-size:14px;line-height:1.5;word-break:break-word;min-width:40px}
+.row.buyer .bbl{background:var(--bbg);color:var(--btxt);border:1px solid var(--b);border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.row.seller .bbl{background:var(--sbg);color:var(--stxt);border-bottom-right-radius:4px;box-shadow:0 2px 6px rgba(28,78,216,.22)}
+.ts{font-size:10px;color:var(--mut);margin-top:3px;padding:0 3px}
+.row.seller .ts{text-align:right}
+.sys{text-align:center;font-size:11.5px;color:var(--sys);padding:2px 0;animation:rise .2s ease both}
+.twrap{background:var(--s2);padding:0 14px 6px;min-height:30px;flex-shrink:0}
+.trow{display:none;gap:7px;align-items:flex-end;animation:rise .18s ease both}
+.trow.on{display:flex}
+.tbbl{background:var(--bbg);border:1px solid var(--b);border-radius:var(--rb);border-bottom-left-radius:4px;padding:10px 14px;display:flex;gap:4px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.dot{width:5px;height:5px;background:#9ca3af;border-radius:50%;animation:tdot 1.2s infinite ease-in-out}
+.dot:nth-child(2){animation-delay:.14s}.dot:nth-child(3){animation-delay:.28s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.6}30%{transform:translateY(-4px);opacity:1}}
+.errmsg{font-size:11.5px;color:#ef4444;padding:3px 16px;background:var(--surface);font-style:italic;min-height:18px;flex-shrink:0}
+.iarea{background:var(--surface);border-top:1px solid var(--b);padding:11px 14px;display:flex;gap:9px;align-items:center;flex-shrink:0}
+.inp{flex:1;min-width:0;background:var(--s2);border:1.5px solid var(--b2);border-radius:24px;padding:9px 15px;font-family:var(--font);font-size:14px;color:var(--pri);outline:none;transition:border-color .15s,box-shadow .15s}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(28,78,216,.09);background:#fff}
+.inp:disabled{opacity:.45;cursor:not-allowed}
+.inp::placeholder{color:#b0b7c3}
+.sbtn{width:38px;height:38px;flex-shrink:0;border-radius:50%;background:var(--acc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .12s,opacity .12s;box-shadow:0 2px 8px rgba(28,78,216,.28)}
+.sbtn:hover:not(:disabled){transform:scale(1.06)}.sbtn:active:not(:disabled){transform:scale(.95)}.sbtn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.sbtn svg{width:16px;height:16px;fill:#fff;display:block}
+.ftr{background:var(--surface);border-top:1px solid var(--b);padding:7px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.rbtn{background:none;border:1px solid var(--b2);border-radius:20px;padding:4px 11px;font-family:var(--font);font-size:11.5px;color:var(--mut);cursor:pointer;transition:background .12s}
+.rbtn:hover{background:var(--s2)}
+.stnote{font-size:11.5px;color:var(--mut);font-style:italic}
+@media(max-width:480px){
+  body{padding:10px 8px 20px}
+  .hdr{padding:12px 14px}
+  .msgs{padding:12px 10px;max-height:340px}
+  .bbl{font-size:13.5px}
+  .iarea{padding:9px 10px}
+  .grp{max-width:calc(100% - 56px)}
+}
+</style>
+</head>
+<body>
+
+<div class="rbar">
+  <span class="rtag">Researcher</span>
+  <label>Condition:</label>
+  <select id="condSel">
+    <option value="Nancy_Hedged">Nancy &mdash; Hedged</option>
+    <option value="Nancy_Direct">Nancy &mdash; Direct</option>
+    <option value="Nate_Hedged">Nate &mdash; Hedged</option>
+    <option value="Nate_Direct">Nate &mdash; Direct</option>
+  </select>
+  <span class="rpill" id="rpill">Nancy / Hedged</span>
+  <span id="debug-intent" style="margin-left:8px;color:#facc15;font-family:var(--mono);font-size:10px;"></span>
+</div>
+
+<div class="card">
+  <div class="hdr">
+    <div class="av" id="hav">N</div>
+    <div class="hinfo">
+      <div class="hname" id="hname">Nancy</div>
+      <div class="hsub">Potential buyer &middot; Online marketplace</div>
+    </div>
+    <span class="hbadge" id="hbadge">Round 0 / 7</span>
+  </div>
+  <div class="pbar">
+    <span class="plbl">Rounds</span>
+    <div class="pips">
+      <div class="pip" id="p1"></div><div class="pip" id="p2"></div>
+      <div class="pip" id="p3"></div><div class="pip" id="p4"></div>
+      <div class="pip" id="p5"></div><div class="pip" id="p6"></div>
+      <div class="pip" id="p7"></div>
+    </div>
+    <span class="plbl2" id="plbl2">$&mdash;</span>
+  </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="twrap">
+    <div class="trow" id="trow">
+      <div class="mav b" id="tav">N</div>
+      <div class="tbbl">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+  </div>
+  <div class="errmsg" id="errmsg"></div>
+  <div class="iarea">
+    <input class="inp" id="inp" type="text" maxlength="300"
+           placeholder="Make an offer or respond&hellip;" />
+    <button class="sbtn" id="sbtn">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+  <div class="ftr">
+    <button class="rbtn" id="rbtn">&#8635; Reset</button>
+    <span class="stnote" id="stnote"></span>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SECTION 1 — API KEY + CONDITION + SCRIPTS
+// ════════════════════════════════════════════════════════════
+// ── API KEY ────────────────────────────────────────────────────
+// Replace with your Anthropic API key from platform.anthropic.com
+// ── PASTE YOUR API KEY HERE ──────────────────────────────────
+// Get it from platform.anthropic.com → API Keys
+var API_KEY = ""; // handled by Python server
+
+// ── CONDITION ─────────────────────────────────────────────────
+// For Qualtrics replace with: "${e://Field/condition}"
+var CONDITION = "Nancy_Hedged";
+
+// ── MALIA'S ALLHEDGES2 LIST (source reference) ────────────────
+// Full list preserved for documentation. Subset used in offer lines
+// marked below. Used in LLM prompt to help classify hedge language.
+var ALLHEDGES2 = ["about","actually","allege","alleged","almost","apparent",
+  "apparently","appear","appeared","appears","approximately","around","assume",
+  "assumed","assumes","assumption","basically","believe","believed","believes",
+  "bunch","conceivably","consider","considered","considers","could","couple",
+  "doubt","doubtful","estimate","estimated","estimates","evidently","fairly",
+  "few","find","finds","found","frequently","generally","guess","guessed",
+  "guesses","hopefully","improbable","inconclusive","indicate","kind of",
+  "largely","like","likely","little","mainly","many","may","maybe","might",
+  "most","mostly","much","must","necessarily","occasionally","often","overall",
+  "partially","perhaps","possibility","possible","possibly","practically",
+  "presumable","presumably","pretty","probability","probable","probably","quite",
+  "rare","rarely","rather","read","really","roughly","say","says","seem",
+  "seemed","seems","seldom","several","should","some","somebody","somehow",
+  "someone","something","sometimes","somewhat","somewhere","speculate",
+  "speculated","speculates","suggest","suggested","suggestive","suggests",
+  "suppose","supposed","supposedly","supposes","surely","tend","think","thinks",
+  "thought","understand","understands","understood","unlikely","unsure",
+  "usually","virtually","will","would"];
+
+// ── HEDGE WORDS USED IN OFFER LINES ───────────────────────────
+// Subset of AllHedges2: approximators + modal uncertainty only
+// Approximators:    around, somewhere, roughly, approximately, about
+// Modal uncertainty: maybe, possibly, might, could, suppose, think, would, probably, guess
+var HEDGE_WORDS_USED = ["around","somewhere","roughly","approximately","about",
+  "maybe","possibly","might","could","suppose","think","would","probably","guess"];
+
+// ── SCRIPTS ───────────────────────────────────────────────────
+// Ladder: $50(open) -> $70 -> $85 -> $85(hold) -> $95 -> $95(hold) -> $100(reluctant)
+// Hedged lines use only AllHedges2 words: approximators + modal uncertainty
+// Direct lines: zero hedge words — declarative statements only
+
+var S = {
+  Nancy_Hedged: {
+    name: "Nancy", init: "N",
+    // Hedge words per round (from AllHedges2):
+    // R1: maybe, around | R2: maybe, somewhere, around | R3: think, possibly, around
+    // R4: think, possibly | R5: suppose, could, possibly, around
+    // R6: think, might, possibly | R7: suppose, could, possibly, think
+    steps: [
+      "Hi, I'm Nancy. I saw you're selling a concert ticket and I'm interested in buying it.%%%I was thinking maybe around $50, if that works for you.",
+      "^^^%%%That's still a bit high for me. Maybe somewhere around $70?",
+      "^^^%%%I think I can possibly go to around $85.",
+      "^^^%%%I think $85 is possibly still where I'm at — I'm not sure I can go higher.",
+      "^^^%%%I suppose I could possibly stretch to around $95.",
+      "^^^%%%I'm not sure I can go much higher — I think $95 might possibly be my limit.",
+      "^^^%%%I suppose I could possibly go to $100, but I really don't think I can go further than that.",
+      "$$$I don't think we're going to reach a price that works. I'll pass."
+    ],
+    accept:    "That works for me. Deal.",
+    nudges:    ["what price were you possibly thinking?","I'm not sure what number you had in mind.","what price might work for you?"],
+    greeting:  ["hi! what price were you possibly thinking for the ticket?","hey there! what price might work for you?","hello! what price were you maybe thinking?"],
+    sellerUp:  ["I'm not sure I follow — I think your price went up? what price might work for you?","hmm, it seems like your price went up — I'm not sure that's going in the right direction. what price could possibly work?"],
+    identity:  ["I'm Nancy! just here looking to buy a concert ticket — what price were you possibly thinking?","it's Nancy — just a buyer on here. what price might work for you?","Nancy here, just trying to find a good deal — what price were you maybe thinking?"],
+    greeting_howareyou: ["hi! doing well, thanks — what price were you possibly thinking?","hey, good thanks! what price might work for you?","good, thanks! what price were you maybe thinking?"],
+    suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side — what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you possibly thinking?"],
+    offtopic:  ["ha, fair enough — what price were you possibly thinking?","got it — I'm not sure what number works for you though.","noted — what price might work for you?"],
+    abusive:   ["let's focus on the price — what were you possibly thinking?","what price might work for you?"],
+    walkaway:  ["I think we might possibly be able to work something out. any flexibility?","maybe there's some wiggle room? what price could possibly work?"],
+    walkaway2: ["understood. good luck.","ok. take care."],
+    whyreason: ["that's just the number I'm working with — what price might work for you?","I suppose that's just my budget. what were you possibly thinking?","I think that's just where I'm at. what price might work?"],
+    reiterate: ["I think my offer is still AMOUNT — what price works for you?","I suppose I'm still at AMOUNT. what were you thinking?","I'm possibly still at AMOUNT — what price might work?"],
+    highball:  ["that's higher than I was thinking. what's the lowest you might consider?","I think that's a bit high for me. what price could possibly work?"],
+    ridiculous:["I don't think that's a serious offer. what price were you possibly thinking?","I suppose that's too high for me to work with. what's your actual price?","I think that's quite far from my range. what price might work?"]
+  },
+
+  Nancy_Direct: {
+    name: "Nancy", init: "N",
+    // Zero hedge words — all declarative statements
+    steps: [
+      "Hi, I'm Nancy. I saw you're selling a concert ticket and I'm interested in buying it.%%%My offer is $50.",
+      "^^^%%%That's still too high. My offer is $70.",
+      "^^^%%%I can go to $85.",
+      "^^^%%%$85 is still my offer. I'm not moving from here.",
+      "^^^%%%My offer is $95.",
+      "^^^%%%$95 is as high as I can go.",
+      "^^^%%%$100 is my absolute limit. I can't go higher.",
+      "$$$I don't think we're going to reach a price that works. I'll pass."
+    ],
+    accept:    "That works for me. Deal.",
+    nudges:    ["what price were you thinking?","what number did you have in mind?","what price works for you?"],
+    greeting:  ["hi! what price were you thinking for the ticket?","hey there! what price works?","hello! what price were you thinking?"],
+    sellerUp:  ["your price went up — that's moving in the wrong direction. what price works for you?","wait, you went higher? what price are you looking for?"],
+    identity:  ["I'm Nancy! just here to buy a concert ticket — what price were you thinking?","it's Nancy — just a buyer on here. what price works?","Nancy here, just looking for a good deal — what price were you thinking?"],
+    greeting_howareyou: ["hi! doing well, thanks — what price were you thinking?","hey, good thanks! what price works?","good, thanks! what price were you thinking?"],
+    suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side. what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you thinking?"],
+    offtopic:  ["ha, fair enough — what price were you thinking?","got it — what number did you have in mind?","noted — what price works for you?"],
+    abusive:   ["let's focus on the price — what were you thinking?","what price works for you?"],
+    walkaway:  ["I think we can work something out. any flexibility?","there's room to negotiate. what price works?"],
+    walkaway2: ["understood. good luck.","ok. take care."],
+    whyreason: ["that's just the number I'm working with. what price works for you?","that's my budget. what were you thinking?","that's just where I'm at. what price works?"],
+    reiterate: ["my offer is AMOUNT. what price works for you?","I'm at AMOUNT. what were you thinking?","still AMOUNT. what price works?"],
+    highball:  ["that's higher than I was thinking. what's the lowest you'd consider?","that's too high for me. what price works?"],
+    ridiculous:["that's not a serious offer. what price were you thinking?","that's too high for me to work with. what's your actual price?","that's too far from my range. what price works?"]
+  },
+
+  Nate_Hedged: {
+    name: "Nate", init: "N",
+    steps: [
+      "Hi, I'm Nate. I saw you're selling a concert ticket and I'm interested in buying it.%%%I was thinking maybe around $50, if that works for you.",
+      "^^^%%%That's still a bit high for me. Maybe somewhere around $70?",
+      "^^^%%%I think I can possibly go to around $85.",
+      "^^^%%%I think $85 is possibly still where I'm at — I'm not sure I can go higher.",
+      "^^^%%%I suppose I could possibly stretch to around $95.",
+      "^^^%%%I'm not sure I can go much higher — I think $95 might possibly be my limit.",
+      "^^^%%%I suppose I could possibly go to $100, but I really don't think I can go further than that.",
+      "$$$I don't think we're going to reach a price that works. I'll pass."
+    ],
+    accept:    "That works for me. Deal.",
+    nudges:    ["what price were you possibly thinking?","I'm not sure what number you had in mind.","what price might work for you?"],
+    greeting:  ["hi! what price were you possibly thinking for the ticket?","hey there! what price might work for you?","hello! what price were you maybe thinking?"],
+    sellerUp:  ["I'm not sure I follow — I think your price went up? what price might work for you?","hmm, it seems like your price went up — I'm not sure that's going in the right direction. what price could possibly work?"],
+    identity:  ["I'm Nate! just here looking to buy a concert ticket — what price were you possibly thinking?","it's Nate — just a buyer on here. what price might work for you?","Nate here, just trying to find a good deal — what price were you maybe thinking?"],
+    greeting_howareyou: ["hi! doing well, thanks — what price were you possibly thinking?","hey, good thanks! what price might work for you?","good, thanks! what price were you maybe thinking?"],
+    suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side — what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you possibly thinking?"],
+    offtopic:  ["ha, fair enough — what price were you possibly thinking?","got it — I'm not sure what number works for you though.","noted — what price might work for you?"],
+    abusive:   ["let's focus on the price — what were you possibly thinking?","what price might work for you?"],
+    walkaway:  ["I think we might possibly be able to work something out. any flexibility?","maybe there's some wiggle room? what price could possibly work?"],
+    walkaway2: ["understood. good luck.","ok. take care."],
+    whyreason: ["that's just the number I'm working with — what price might work for you?","I suppose that's just my budget. what were you possibly thinking?","I think that's just where I'm at. what price might work?"],
+    reiterate: ["I think my offer is still AMOUNT — what price works for you?","I suppose I'm still at AMOUNT. what were you thinking?","I'm possibly still at AMOUNT — what price might work?"],
+    highball:  ["that's higher than I was thinking. what's the lowest you might consider?","I think that's a bit high for me. what price could possibly work?"],
+    ridiculous:["I don't think that's a serious offer. what price were you possibly thinking?","I suppose that's too high for me to work with. what's your actual price?","I think that's quite far from my range. what price might work?"]
+  },
+
+  Nate_Direct: {
+    name: "Nate", init: "N",
+    steps: [
+      "Hi, I'm Nate. I saw you're selling a concert ticket and I'm interested in buying it.%%%My offer is $50.",
+      "^^^%%%That's still too high. My offer is $70.",
+      "^^^%%%I can go to $85.",
+      "^^^%%%$85 is still my offer. I'm not moving from here.",
+      "^^^%%%My offer is $95.",
+      "^^^%%%$95 is as high as I can go.",
+      "^^^%%%$100 is my absolute limit. I can't go higher.",
+      "$$$I don't think we're going to reach a price that works. I'll pass."
+    ],
+    accept:    "That works for me. Deal.",
+    nudges:    ["what price were you thinking?","what number did you have in mind?","what price works for you?"],
+    greeting:  ["hi! what price were you thinking for the ticket?","hey there! what price works?","hello! what price were you thinking?"],
+    sellerUp:  ["your price went up — that's moving in the wrong direction. what price works for you?","wait, you went higher? what price are you looking for?"],
+    identity:  ["I'm Nate! just here to buy a concert ticket — what price were you thinking?","it's Nate — just a buyer on here. what price works?","Nate here, just looking for a good deal — what price were you thinking?"],
+    greeting_howareyou: ["hi! doing well, thanks — what price were you thinking?","hey, good thanks! what price works?","good, thanks! what price were you thinking?"],
+    suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side. what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you thinking?"],
+    offtopic:  ["ha, fair enough — what price were you thinking?","got it — what number did you have in mind?","noted — what price works for you?"],
+    abusive:   ["let's focus on the price — what were you thinking?","what price works for you?"],
+    walkaway:  ["I think we can work something out. any flexibility?","there's room to negotiate. what price works?"],
+    walkaway2: ["understood. good luck.","ok. take care."],
+    whyreason: ["that's just the number I'm working with. what price works for you?","that's my budget. what were you thinking?","that's just where I'm at. what price works?"],
+    reiterate: ["my offer is AMOUNT. what price works for you?","I'm at AMOUNT. what were you thinking?","still AMOUNT. what price works?"],
+    highball:  ["that's higher than I was thinking. what's the lowest you'd consider?","that's too high for me. what price works?"],
+    ridiculous:["that's not a serious offer. what price were you thinking?","that's too high for me to work with. what's your actual price?","that's too far from my range. what price works?"]
+  }
+};
+
+// ── TYPO SYSTEM ───────────────────────────────────────────────
+var TYPO_RATE = 0.40, FORGET_RATE = 0.38;
+var TYPOS = [
+  ["thinking","thinkign","*thinking"],["around","arounnd","*around"],
+  ["budget","budegt","*budget"],["maybe","amybe","*maybe"],
+  ["hoping","hpoing","*hoping"],["offer","offfer","*offer"],
+  ["price","pirce","*price"],["possibly","posibly","*possibly"],
+  ["suppose","supppose","*suppose"],["higher","hgiher","*higher"],
+  ["working","wroking","*working"],["would","woud","*would"],
+  ["number","numbr","*number"],["limit","limt","*limit"]
+];
+function applyTypo(text) {
+  if (Math.random() > TYPO_RATE) return [text];
+  var hits = TYPOS.filter(function(t){ return text.toLowerCase().indexOf(t[0]) !== -1; });
+  if (!hits.length) return [text];
+  var pick = hits[Math.floor(Math.random() * hits.length)];
+  var typoText = text.replace(new RegExp(pick[0],"i"), pick[1]);
+  if (Math.random() < FORGET_RATE) return [typoText];
+  return [typoText, pick[2]];
+}
+
+// ════════════════════════════════════════════════════════════
+// SECTION 2 — ENGINE (price parser, negotiation logic, DOM)
+// ════════════════════════════════════════════════════════════
+// ── CONSTANTS ─────────────────────────────────────────────────
+var BUYER_MAX = 90, BUYER_MAX_FINAL = 100;
+var LADDER = {1:50, 2:70, 3:85, 4:85, 5:95, 6:95, 7:100};
+var HIGHBALL = 120, RIDICULOUS = 500;
+var TPC = 50, TBASE = 400, TSTART = 1400;
+var TINACT = 120000, TDISCONNECT = 600000;
+
+// ── STATE ─────────────────────────────────────────────────────
+var round=0, si=1, done=false, submitOk=false, lastBuyerOffer=50, lastSellerPrice=null;
+var inactTimer=null, inactLvl=0, disconnectTimer=null;
+var chatLog=[], lastPrice=null;
+var nc=0,sc=0,ac=0,wc=0,wc2=0,oc=0,gc=0,rc=0,wrc=0,hc=0,rc2=0;
+var awaitingWalkawayConfirm=false; lastSellerPrice=null;
+var D={};
+
+// ── HELPERS ───────────────────────────────────────────────────
+function C()     { return S[CONDITION]; }
+function pk(a,c) { return a[c % a.length]; }
+
+// ── PRICE PARSER ──────────────────────────────────────────────
+function px(t) {
+  var lower = t.toLowerCase().trim();
+  var qstarters = ["why ","why?","how come","what if","is that","is this",
+    "does that","can you explain","do you","did you","will you","would you",
+    "could you","should you","are you","was that","have you"];
+  for (var i=0; i<qstarters.length; i++) {
+    if (lower.indexOf(qstarters[i])===0) return null;
+  }
+  var dm = t.match(/\$\s*(\d+(?:\.\d{1,2})?)/g);
+  if (dm && dm.length) return parseFloat(dm[dm.length-1].replace(/[^\d.]/g,""));
+  var m = t.match(/\b(\d+)\s*(?:dollars?|bucks?)/i);
+  if (m) return parseFloat(m[1]);
+  var blockP = [/paid\s+\$?\d+/i,/spent\s+\$?\d+/i,/cost\s+\$?\d+/i,/worth\s+\$?\d+/i];
+  var offerW = ["want","take","accept","offer","asking","sell","how about","maybe",
+    "thinking","looking for","willing","do","need","happy with","fine with",
+    "okay with","work for","what about","around","for","at","about","roughly","approximately",
+    "below","above","under","over","minimum","maximum","least","most","cannot","won't",
+    "wont","going","less than","more than","lower than","higher than","not less","not below"];
+  var hasOW = offerW.some(function(w){ return lower.indexOf(w)!==-1; });
+  if (hasOW) {
+    var bm = t.match(/\b(\d+)\b/g);
+    if (bm) {
+      for (var j=bm.length-1; j>=0; j--) {
+        var bn = parseFloat(bm[j]);
+        if (bn<10||bn>10000) continue;
+        var blocked = blockP.some(function(pat){ var pm=t.match(pat); return pm&&pm[0].indexOf(bm[j])!==-1; });
+        if (!blocked) return bn;
+      }
+    }
+  }
+  var sm = t.trim().match(/^\$\s*(\d+(?:\.\d{1,2})?)$/);
+  if (sm) return parseFloat(sm[1]);
+  var sm2 = t.trim().match(/^(\d+)$/);
+  if (sm2) { var n=parseFloat(sm2[1]); if(n>=10&&n<=10000) return n; }
+  return null;
+}
+function vp(p) { if(p===null||p===undefined||p<=0||p>10000) return null; return p; }
+function pxFromGreeting(t) {
+  var dm = t.match(/\$\s*(\d+(?:\.\d{1,2})?)/g);
+  if (dm) return parseFloat(dm[dm.length-1].replace(/[^\d.]/g,""));
+  var m = t.match(/\b(\d+)\s*(?:dollars?|bucks?)/i);
+  if (m) return parseFloat(m[1]);
+  var bm = t.match(/\b(\d+)\b/g);
+  if (bm) { for(var i=bm.length-1;i>=0;i--){ var n=parseFloat(bm[i]); if(n>=10&&n<=10000) return n; } }
+  return null;
+}
+function tstamp() { return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}); }
+function parseStep(s) {
+  if (!s) return [];
+  s = s.replace(/\^\^\^/g,"").replace(/\$\$\$/g,"").trim();
+  return s.split("%%%").map(function(x){return x.trim();}).filter(Boolean);
+}
+
+// ── DOM ───────────────────────────────────────────────────────
+function addBuyer(txt) {
+  chatLog.push({speaker:"buyer",msg:txt,t:new Date().toISOString()});
+  var row=mk("div","row buyer"),av=mk("div","mav b"),grp=mk("div","grp");
+  var b=mk("div","bbl"),ts=mk("div","ts");
+  av.textContent=C().init; b.textContent=txt; ts.textContent=tstamp();
+  grp.appendChild(b); grp.appendChild(ts); row.appendChild(av); row.appendChild(grp);
+  D.msgs.appendChild(row); scroll();
+}
+function addSeller(txt) {
+  chatLog.push({speaker:"seller",msg:txt,t:new Date().toISOString()});
+  var row=mk("div","row seller"),av=mk("div","mav s"),grp=mk("div","grp");
+  var b=mk("div","bbl"),ts=mk("div","ts");
+  av.textContent="Me"; b.textContent=txt; ts.textContent=tstamp();
+  grp.appendChild(b); grp.appendChild(ts); row.appendChild(grp); row.appendChild(av);
+  D.msgs.appendChild(row); scroll();
+}
+function addSys(txt) {
+  chatLog.push({speaker:"system",msg:txt,t:new Date().toISOString()});
+  var d=mk("div","sys"); d.textContent=txt; D.msgs.appendChild(d); scroll();
+}
+function mk(tag,cls) { var e=document.createElement(tag); e.className=cls; return e; }
+function scroll()    { D.msgs.scrollTop=D.msgs.scrollHeight; }
+function typing(on)  { D.trow.className="trow"+(on?" on":""); if(on) scroll(); }
+function enInp(on)   { D.inp.disabled=!on; D.sbtn.disabled=!on; submitOk=on; if(on) D.inp.focus(); }
+function showErr(m)  { D.errmsg.textContent=m; setTimeout(function(){D.errmsg.textContent="";},3000); }
+function updateUI() {
+  document.getElementById("hbadge").textContent="Round "+round+" / 7";
+  for(var i=1;i<=7;i++){ var p=document.getElementById("p"+i); if(p) p.className="pip"+(i<round?" done":(i===round?" cur":"")); }
+  if(lastPrice!==null) document.getElementById("plbl2").textContent="$"+lastPrice;
+}
+
+// ── FIRE ──────────────────────────────────────────────────────
+var INACT_MSGS = ["Hello, are you there?","Hello?","Hmm, maybe you got disconnected?","I'll wait a bit longer, but let me know if you're still there."];
+function fire(lines, cb, doTypo) {
+  enInp(false);
+  if (doTypo && lines.length>0) { var t=applyTypo(lines[0]); if(t.length>1) lines=t.concat(lines.slice(1)); }
+  var i=0;
+  function nxt() {
+    if (i>=lines.length) { if(cb) cb(); return; }
+    var ln=lines[i++]; if(!ln){nxt();return;}
+    // Natural timing variance — real people don't respond at exactly the same speed
+    // Pre-pause: 800ms-2200ms (sometimes quick, sometimes slow to "read" the message)
+    var prePause = 800 + Math.floor(Math.random() * 1400);
+    // Typing speed: base + length-based + random variance (+/- 30%)
+    var baseTyping = ln.charAt(0)==="*" ? 600 : TBASE + (ln.length * TPC);
+    var variance = 0.7 + (Math.random() * 0.6); // 0.7x to 1.3x
+    var typingDur = Math.floor(baseTyping * variance);
+    setTimeout(function(){typing(true);}, prePause);
+    setTimeout(function(){typing(false); addBuyer(ln); nxt();}, prePause + typingDur);
+  }
+  nxt();
+}
+
+// ── INACTIVITY ────────────────────────────────────────────────
+function startInact() {
+  clearTimeout(inactTimer); clearTimeout(disconnectTimer);
+  if (inactLvl>=INACT_MSGS.length) return;
+  inactTimer=setTimeout(function(){
+    if(done||!submitOk||D.inp.disabled) return;
+    var msg=INACT_MSGS[inactLvl]; inactLvl++;
+    fire([msg],function(){ enInp(true); if(inactLvl<INACT_MSGS.length) startInact(); },false);
+  },TINACT);
+  disconnectTimer=setTimeout(function(){
+    if(done) return;
+    addSys("The buyer has disconnected due to inactivity. Session ended.");
+    done=true; enInp(false);
+    document.getElementById("stnote").textContent="Session ended";
+    save(0,round,false);
+  },TDISCONNECT);
+}
+function stopInact() { clearTimeout(inactTimer); clearTimeout(disconnectTimer); inactLvl=0; }
+
+// ── REITERATE ─────────────────────────────────────────────────
+function buildReiterateMsg(c) {
+  var amt="$"+lastBuyerOffer;
+  var isHedged=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+  var msgs=isHedged?[
+    "I think my offer is still "+amt+" — what price works for you?",
+    "I suppose I'm still at "+amt+". what were you thinking?",
+    "I'm possibly still at "+amt+" — what price might work?"
+  ]:[
+    "my offer is "+amt+". what price works for you?",
+    "I'm at "+amt+". what were you thinking?",
+    "still "+amt+". what price works?"
+  ];
+  return msgs[rc%msgs.length];
+}
+
+// ── HANDLE ────────────────────────────────────────────────────
+function handle(txt,preP) {
+  stopInact();
+  var c=C();
+  var p=(preP!==undefined)?preP:vp(px(txt));
+  if(p!==null) lastPrice=p;
+  if(p===null){ fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false); return; }
+
+  // Detect if seller increased their price (going the wrong direction)
+  var sellerIncreased = (lastSellerPrice !== null && p > lastSellerPrice && p > BUYER_MAX);
+  lastSellerPrice = p; // track for next round
+  if(p>RIDICULOUS){ fire([pk(c.ridiculous,rc2)],function(){rc2++;enInp(true);startInact();},false); return; }
+  if(p>HIGHBALL&&round===0){ round++;updateUI(); fire([pk(c.highball,hc)],function(){hc++;enInp(true);startInact();},false); return; }
+  round++; updateUI();
+  if(LADDER[round]) lastBuyerOffer=LADDER[round];
+  var currentCeiling=(lastBuyerOffer>=100)?BUYER_MAX_FINAL:BUYER_MAX;
+  if(p<=currentCeiling){
+    fire([c.accept],function(){
+      addSys("Deal reached at $"+p+" in round "+round);
+      done=true; enInp(false);
+      document.getElementById("stnote").textContent="Deal at $"+p;
+      document.getElementById("hbadge").textContent="Deal at $"+p;
+      save(p,round,true);
+    },false); return;
+  }
+  if(si<c.steps.length-1){
+    // If seller increased their price, call it out before countering
+    if(sellerIncreased && c.sellerUp) {
+      var increaseMsg = pk(c.sellerUp, nc);
+      fire([increaseMsg], function(){ nc++; enInp(true); startInact(); }, false);
+      return;
+    }
+    var lines=parseStep(c.steps[si]); si++;
+    // If seller asking above highball threshold, acknowledge before countering
+    var isHedged=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+    if(p>HIGHBALL && lines.length>0){
+      var ack=isHedged?"I think that's still a bit high for me — ":"that's still too high — ";
+      lines[0]=ack+lines[0].charAt(0).toLowerCase()+lines[0].slice(1);
+    }
+    fire(lines,function(){enInp(true);startInact();},true); return;
+  }
+  var exitLines=parseStep(c.steps[c.steps.length-1]);
+  fire(exitLines,function(){ addSys("No deal reached after "+round+" rounds"); done=true; enInp(false); document.getElementById("stnote").textContent="No deal"; save(0,round,false); },false);
+}
+
+// ── SAVE ──────────────────────────────────────────────────────
+function save(price,rnd,reached) {
+  try {
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_price",price);
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_round",rnd);
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_reached",reached?"1":"0");
+    Qualtrics.SurveyEngine.setEmbeddedData("chat_log",JSON.stringify(chatLog));
+    var transcript=chatLog.map(function(e){
+      if(e.speaker==="system") return null;
+      var name=e.speaker==="buyer"?C().name:"You";
+      var time=new Date(e.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+      return name+" ("+time+"): "+e.msg;
+    }).filter(Boolean).join("\n");
+    Qualtrics.SurveyEngine.setEmbeddedData("chat_transcript",transcript);
+  } catch(e) {}
+}
+
+// ════════════════════════════════════════════════════════════
+// SECTION 3 — LLM CLASSIFIER + CAPTURE + RESET + INIT
+// ════════════════════════════════════════════════════════════
+// ── LLM INTENT CLASSIFIER ─────────────────────────────────────
+// Uses AllHedges2 list in the prompt so the LLM understands hedge language
+// and can better distinguish hedged intent signals from direct ones
+async function classifyIntent(message) {
+  var isFirst=(round===1&&si===2);
+  var hedgeContext = HEDGE_WORDS_USED.join(", ");
+
+  var prompt = [
+    "Classify this seller message in a concert ticket negotiation. Round "+round+"/7.",
+    "Seller: \""+message+"\"",
+    "",
+    "PRICE      — contains a number as a price offer (e.g. $80, 90, how about 75, maybe 100)",
+    "ACCEPT     — agrees to current offer, no new number (e.g. deal, ok, sure, fine, sold)",
+    "WALKAWAY   — wants to stop negotiating (e.g. not interested, bye, forget it, done)",
+    "SUSPICION  — thinks buyer is a bot (e.g. are you real, you seem like AI)",
+    "ABUSIVE    — rude or hostile language",
+    "WHY        — questions or challenges the price (e.g. why 70, that\'s too low, explain)",
+    "REITERATE  — wants buyer to repeat their offer (e.g. what was your offer, say it again)",
+    "GREETING   — any greeting or social opener with no price (e.g. hi, hello, hey, how are you, hi how are you, good morning, nice to meet you)",
+    "OFFTOPIC   — frustration, small talk, gibberish, emotional expressions, anything without a price number",
+    "",
+    "CRITICAL: If there is NO number in the message, it cannot be PRICE.",
+    "Emotional messages like \'ugh\', \'this is frustrating\', \'come on\' = OFFTOPIC.",
+    "If message has a number AND other content, still classify as PRICE.",
+    "Reply with ONE word only. No explanation."
+  ].join("\n");
+
+  try {
+    // Call Python backend — API key stays in .env, never in browser
+    var resp = await fetch("/classify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message:    message,
+        round:      round,
+        isFirst:    isFirst,
+        hedgeWords: hedgeContext
+      })
+    });
+
+    if (!resp.ok) {
+      console.warn("[DEBUG] Server error:", resp.status);
+      return "OFFTOPIC";
+    }
+
+    var data = await resp.json();
+    var finalIntent = data.intent || "OFFTOPIC";
+    var dbg = document.getElementById("debug-intent");
+    if (dbg) dbg.textContent = "LLM: " + finalIntent;
+    console.log("[LLM]", message, "→", finalIntent);
+    return finalIntent;
+
+  } catch(e) {
+    console.warn("[DEBUG] Classifier error:", e.message || e);
+    return "OFFTOPIC";
+  }
+}
+
+// ── CAPTURE ───────────────────────────────────────────────────
+async function capture() {
+  if (!submitOk||done) return;
+  var raw=D.inp.value.trim();
+  if (!raw) return;
+  if (raw.length>300) { showErr("Please keep your message under 300 characters."); return; }
+  addSeller(raw); D.inp.value=""; enInp(false);
+  var c=C(), rawLower=raw.toLowerCase().trim();
+  // Show typing dots immediately while LLM classifies (feels responsive)
+  typing(true);
+
+  // Greeting detection in JS — faster and more reliable than LLM for simple greetings
+  // Only on first seller turn (round===1 && si===2)
+  var GREET_KW = ["hi ","hi!","hey ","hey!","hello","howdy","hiya","good morning",
+    "good afternoon","good evening","how are you","how r u","how are u",
+    "what's up","whats up","sup ","yo ","nice to meet","greetings"];
+  var isFirstTurn = (round===1 && si===2);
+  // Skip JS greeting if message contains identity/suspicion questions
+  // Identity questions ("who are you") = casual identity, use identity bank
+  // Bot accusations ("are you a bot") = suspicion, use suspicion bank
+  var IDENTITY_KW = ["who are you","who r you","what are you","what is your name",
+    "your name","tell me about yourself","introduce yourself","who am i talking to"];
+  var SUSPICION_ACCUSATION = ["are you a bot","are you real","are you human","are you ai",
+    "is this real","is this automated","you seem like","you sound like","are you a robot"];
+  var hasIdentity   = IDENTITY_KW.some(function(w){ return rawLower.indexOf(w)!==-1; });
+  var hasSuspicion  = SUSPICION_ACCUSATION.some(function(w){ return rawLower.indexOf(w)!==-1; });
+
+  // Handle identity question on first turn in JS — no LLM needed
+  if (isFirstTurn && hasIdentity && !hasSuspicion) {
+    typing(false);
+    fire([pk(c.identity,gc)],function(){gc++;enInp(true);startInact();},false);
+    return;
+  }
+  if (isFirstTurn && !hasIdentity && !hasSuspicion && GREET_KW.some(function(w){ return rawLower.indexOf(w)!==-1; })) {
+    var ep=vp(pxFromGreeting(raw));
+    if (ep!==null) { typing(false); handle(raw,ep); return; }
+    var dbg3=document.getElementById("debug-intent");
+    if(dbg3) dbg3.textContent="JS: GREETING";
+    console.log("[JS] greeting detected");
+    typing(false);
+    // Use "how are you" variant if seller asked, plain variant otherwise
+    var howAreYou = rawLower.indexOf("how are you")!==-1 || rawLower.indexOf("how r u")!==-1 || rawLower.indexOf("how are u")!==-1;
+    var greetBank = (howAreYou && c.greeting_howareyou) ? c.greeting_howareyou : c.greeting;
+    fire([pk(greetBank,gc)],function(){gc++;enInp(true);startInact();},false);
+    return;
+  }
+
+  // say/type bot-test — deterministic
+  var sayMatch=rawLower.match(/^(?:say|type)\s+([a-z]{3,})$/);
+  if (sayMatch) { fire([sayMatch[1]+"! Anyway, shall we get back to the price?"],function(){enInp(true);startInact();},false); return; }
+
+  // Walkaway confirmation — deterministic negation check first
+  if (awaitingWalkawayConfirm) {
+    awaitingWalkawayConfirm=false; lastSellerPrice=null;
+    var NEGATE=["no i don","no i dont","no wait","no actually","no no ","never mind",
+      "i want to continue","keep going","not done","no let",
+      "i don't want to end","i dont want to end","wait no","no i want"];
+    var isNeg=NEGATE.some(function(w){return rawLower.indexOf(w)!==-1;});
+    if (!isNeg) {
+      var wIntent=await classifyIntent(raw);
+      if (wIntent==="WALKAWAY"||wIntent==="ACCEPT") {
+        fire([pk(c.walkaway2,wc2)],function(){
+          wc2++; addSys("Seller chose to end the negotiation.");
+          done=true; enInp(false);
+          document.getElementById("stnote").textContent="Seller walked away";
+          save(0,round,false);
+        },false); return;
+      }
+    }
+  }
+
+  // Fast path — price found, skip LLM
+  // BUT first check: is this a question/why sentence that happens to contain a number?
+  // e.g. "why did you say 70", "i want to know why 85", "explain 70 to me"
+  // These should go to LLM not be parsed as price offers
+  var questionPatterns = [
+    /why.{0,30}\d/i,           // "why...70", "why did you say 70"
+    /know why/i,               // "want to know why"
+    /you say \d/i,             // "why did you say 70"
+    /said \d/i,                // "you said 70"
+    /explain.{0,20}\d/i,       // "explain 70"
+    /what.{0,10}mean.{0,10}\d/i // "what do you mean by 70"
+  ];
+  var isQuestion = questionPatterns.some(function(p){ return p.test(raw); });
+  var quickPrice = isQuestion ? null : vp(px(raw));
+  if (quickPrice!==null) {
+    var dbg2=document.getElementById("debug-intent");
+    if(dbg2) dbg2.textContent="JS: PRICE $"+quickPrice;
+    console.log("[JS] price detected:", quickPrice);
+    typing(false); handle(raw,quickPrice); return;
+  }
+
+  // Classify with LLM
+  var intent=await classifyIntent(raw);
+  typing(false); // Turn off pre-LLM indicator before bot responds
+
+  switch(intent) {
+    case "GREETING":
+      if (round===1&&si===2) {
+        var ep=vp(pxFromGreeting(raw));
+        if(ep!==null){handle(raw,ep);return;}
+        fire([pk(c.greeting,gc)],function(){gc++;enInp(true);startInact();},false);
+      } else {
+        fire([pk(c.offtopic,oc)],function(){oc++;enInp(true);startInact();},false);
+      }
+      break;
+    case "ACCEPT":
+      if (lastBuyerOffer>0) {
+        var da=lastBuyerOffer;
+        fire([c.accept],function(){
+          addSys("Deal reached at $"+da+" in round "+round);
+          done=true; enInp(false);
+          document.getElementById("stnote").textContent="Deal at $"+da;
+          document.getElementById("hbadge").textContent="Deal at $"+da;
+          save(da,round,true);
+        },false);
+      } else { fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false); }
+      break;
+    case "SUSPICION":
+      fire([pk(c.suspicion,sc)],function(){sc++;enInp(true);startInact();},false); break;
+    case "ABUSIVE":
+      fire([pk(c.abusive,ac)],function(){ac++;enInp(true);startInact();},false); break;
+    case "WALKAWAY":
+      if (round<7) {
+        awaitingWalkawayConfirm=true;
+        fire([pk(c.walkaway,wc)],function(){wc++;enInp(true);startInact();},false);
+      } else {
+        var exitL=parseStep(C().steps[C().steps.length-1]);
+        fire(exitL,function(){addSys("No deal reached after "+round+" rounds");done=true;enInp(false);document.getElementById("stnote").textContent="No deal";save(0,round,false);},false);
+      }
+      break;
+    case "WHY":
+      fire([pk(c.whyreason,wrc)],function(){wrc++;enInp(true);startInact();},false); break;
+    case "REITERATE":
+      if(round>0){fire([buildReiterateMsg(c)],function(){rc++;enInp(true);startInact();},false);}
+      else{fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false);}
+      break;
+    case "OFFTOPIC":
+      // Let LLM generate a natural in-character reply
+      (async function() {
+        try {
+          var resp = await fetch("/respond", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message:   raw,
+              condition: CONDITION,
+              round:     round,
+              lastOffer: lastBuyerOffer
+            })
+          });
+          var data = await resp.json();
+          var reply = data.reply || pk(c.offtopic, oc);
+          typing(false);
+          fire([reply], function(){ oc++; enInp(true); startInact(); }, false);
+        } catch(e) {
+          // Fallback to scripted if server fails
+          typing(false);
+          fire([pk(c.offtopic,oc)], function(){ oc++; enInp(true); startInact(); }, false);
+        }
+      })();
+      break;
+    case "PRICE":
+      // JS parser missed it — ask LLM to extract the number from natural language
+      // e.g. "not a penny under 115", "a hundred and twenty", "my floor is 110"
+      (async function() {
+        try {
+          var priceResp = await fetch("/extract_price", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: raw })
+          });
+          var priceData = await priceResp.json();
+          var extractedPrice = priceData.price ? vp(priceData.price) : null;
+          var dbg4 = document.getElementById("debug-intent");
+          if (dbg4) dbg4.textContent += extractedPrice ? " $"+extractedPrice : " (no price)";
+          typing(false);
+          if (extractedPrice !== null) {
+            handle(raw, extractedPrice);
+          } else {
+            // LLM said PRICE but no number found — nudge
+            fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false);
+          }
+        } catch(e) {
+          typing(false);
+          fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false);
+        }
+      })();
+      break;
+    default:
+      fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false); break;
+  }
+}
+
+// ── RESET ─────────────────────────────────────────────────────
+function condUI() {
+  var c=C();
+  document.getElementById("hav").textContent=c.init;
+  document.getElementById("hname").textContent=c.name;
+  document.getElementById("tav").textContent=c.init;
+  document.getElementById("rpill").textContent=CONDITION.replace("_"," / ");
+}
+function reset() {
+  round=0;si=1;done=false;submitOk=false;lastBuyerOffer=50;
+  inactLvl=0;lastPrice=null;chatLog=[];
+  nc=0;sc=0;ac=0;wc=0;wc2=0;oc=0;gc=0;rc=0;wrc=0;hc=0;rc2=0;
+  awaitingWalkawayConfirm=false; lastSellerPrice=null;
+  clearTimeout(inactTimer);clearTimeout(disconnectTimer);
+  D.msgs.innerHTML="";D.inp.value="";typing(false);
+  document.getElementById("stnote").textContent="";
+  document.getElementById("plbl2").textContent="$\u2014";
+  document.getElementById("hbadge").textContent="Round 0 / 7";
+  for(var i=1;i<=7;i++){var pp=document.getElementById("p"+i);if(pp)pp.className="pip";}
+  condUI();enInp(false);
+  var sc2=mk("div","connecting");
+  sc2.innerHTML="<div class=\"spinner\"></div><span class=\"ctxt\">Connecting to buyer\u2026</span>";
+  D.msgs.appendChild(sc2);
+  setTimeout(function(){
+    D.msgs.innerHTML="";
+    addSys("All chat participants have arrived. You may now chat!");
+    var openLines=parseStep(C().steps[0]);
+    fire(openLines,function(){round=1;si=2;lastBuyerOffer=LADDER[1];updateUI();enInp(true);startInact();},false);
+  },TSTART);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload=function(){
+  D.msgs=document.getElementById("msgs");
+  D.inp=document.getElementById("inp");
+  D.sbtn=document.getElementById("sbtn");
+  D.trow=document.getElementById("trow");
+  D.tav=document.getElementById("tav");
+  D.errmsg=document.getElementById("errmsg");
+  D.sbtn.addEventListener("click",function(){capture();});
+  D.inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&submitOk)capture();});
+  document.getElementById("condSel").addEventListener("change",function(){CONDITION=this.value;reset();});
+  document.getElementById("rbtn").addEventListener("click",reset);
+  CONDITION=document.getElementById("condSel").value;
+  reset();
+};
+</script>
+</body>
+</html>
