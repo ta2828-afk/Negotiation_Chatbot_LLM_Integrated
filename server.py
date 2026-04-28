@@ -191,8 +191,11 @@ def static_files(path):
 if __name__ == '__main__':
     key = os.getenv("ANTHROPIC_API_KEY")
     if not key or key == "your_api_key_here":
-        print("ERROR: Set ANTHROPIC_API_KEY in .env file")
+        print("ERROR: Set ANTHROPIC_API_KEY in environment variables")
     else:
         print(f"API key loaded: {key[:8]}...")
-        print("Server running at http://localhost:5000")
-    app.run(debug=True, port=5000)
+    port = int(os.getenv("PORT", 5000))
+    print(f"Server starting on port {port}")
+    # host=0.0.0.0 is required for Render to detect the port
+    # debug=False prevents the reloader from confusing Render
+    app.run(host="0.0.0.0", port=port, debug=False)
