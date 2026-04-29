@@ -572,7 +572,7 @@ function save(price,rnd,reached) {
 // Uses AllHedges2 list in the prompt so the LLM understands hedge language
 // and can better distinguish hedged intent signals from direct ones
 async function classifyIntent(message) {
-  var isFirst=(round===1&&si===2);
+  var isFirst=(round===1&&si===1);
   var hedgeContext = HEDGE_WORDS_USED.join(", ");
 
   var prompt = [
@@ -642,7 +642,7 @@ async function capture() {
   var GREET_KW = ["hi ","hi!","hey ","hey!","hello","howdy","hiya","good morning",
     "good afternoon","good evening","how are you","how r u","how are u",
     "what's up","whats up","sup ","yo ","nice to meet","greetings"];
-  var isFirstTurn = (round===1 && si===2);
+  var isFirstTurn = (round===1 && si===1);
   // Skip JS greeting if message contains identity/suspicion questions
   // Identity questions ("who are you") = casual identity, use identity bank
   // Bot accusations ("are you a bot") = suspicion, use suspicion bank
@@ -847,7 +847,7 @@ function reset() {
     D.msgs.innerHTML="";
     addSys("All chat participants have arrived. You may now chat!");
     var openLines=parseStep(C().steps[0]);
-    fire(openLines,function(){round=1;si=2;lastBuyerOffer=LADDER[1];updateUI();enInp(true);startInact();},false);
+    fire(openLines,function(){round=1;si=1;lastBuyerOffer=LADDER[1];updateUI();enInp(true);startInact();},false);
   },TSTART);
 }
 
