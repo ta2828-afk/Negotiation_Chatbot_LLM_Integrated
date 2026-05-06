@@ -91,7 +91,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 </head>
 <body>
 
-<div class="rbar">
+<div class="rbar" style="display:none">
   <span class="rtag">Researcher</span>
   <label>Condition:</label>
   <select id="condSel">
@@ -608,7 +608,7 @@ async function classifyIntent(message) {
 
   try {
     // Call Python backend — API key stays in .env, never in browser
-    var resp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/classify", {
+    var resp = await fetch("/classify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -735,7 +735,7 @@ async function capture() {
 
   switch(intent) {
     case "GREETING":
-      if (round===1&&si===2) {
+      if (round===1&&si===1) {
         var ep=vp(pxFromGreeting(raw));
         if(ep!==null){handle(raw,ep);return;}
         fire([pk(c.greeting,gc)],function(){gc++;enInp(true);startInact();},false);
@@ -778,7 +778,7 @@ async function capture() {
       // Let LLM generate a natural in-character reply
       (async function() {
         try {
-          var resp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/respond", {
+          var resp = await fetch("/respond", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -804,7 +804,7 @@ async function capture() {
       // e.g. "not a penny under 115", "a hundred and twenty", "my floor is 110"
       (async function() {
         try {
-          var priceResp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/extract_price", {
+          var priceResp = await fetch("/extract_price", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: raw })
