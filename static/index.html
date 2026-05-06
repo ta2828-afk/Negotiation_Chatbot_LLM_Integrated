@@ -157,7 +157,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 var API_KEY = ""; // handled by Python server
 
 // ── CONDITION ─────────────────────────────────────────────────
-// For Qualtrics replace with: "${e://Field/condition}"
+// Reads condition from URL parameter: ?condition=NancyHedge
 var CONDITION_MAP = {
   "NancyHedge":  "Nancy_Hedged",
   "NateHedge":   "Nate_Hedged",
@@ -168,7 +168,6 @@ var CONDITION_MAP = {
   "Nancy_Direct": "Nancy_Direct",
   "Nate_Direct":  "Nate_Direct"
 };
-// Read condition from URL param: ?condition=NancyHedge
 var urlParams = new URLSearchParams(window.location.search);
 var CONDITION_RAW = urlParams.get("condition") || "Nancy_Hedged";
 var CONDITION = CONDITION_MAP[CONDITION_RAW] || "Nancy_Hedged";
@@ -610,7 +609,7 @@ async function classifyIntent(message) {
 
   try {
     // Call Python backend — API key stays in .env, never in browser
-    var resp = await fetch("/classify", {
+    var resp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/classify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -737,7 +736,7 @@ async function capture() {
 
   switch(intent) {
     case "GREETING":
-      if (round===1&&si===2) {
+      if (round===1&&si===1) {
         var ep=vp(pxFromGreeting(raw));
         if(ep!==null){handle(raw,ep);return;}
         fire([pk(c.greeting,gc)],function(){gc++;enInp(true);startInact();},false);
@@ -780,7 +779,7 @@ async function capture() {
       // Let LLM generate a natural in-character reply
       (async function() {
         try {
-          var resp = await fetch("/respond", {
+          var resp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/respond", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -806,7 +805,7 @@ async function capture() {
       // e.g. "not a penny under 115", "a hundred and twenty", "my floor is 110"
       (async function() {
         try {
-          var priceResp = await fetch("/extract_price", {
+          var priceResp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/extract_price", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: raw })
@@ -866,16 +865,16 @@ function reset() {
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=function(){
-  // Show researcher bar only when NOT in iframe (direct HF access)
-  // Hidden by default — only visible to researcher testing directly
+  // Show researcher bar only when accessed directly (no condition param)
+  // Hides automatically when loaded as iframe in Qualtrics
   try {
-    if (window.self === window.top) {
+    var params = new URLSearchParams(window.location.search);
+    var inIframe = (window.self !== window.top);
+    if (!inIframe && params.get("condition") === null) {
       var rbar = document.querySelector(".rbar");
       if (rbar) rbar.style.display = "flex";
     }
-  } catch(e) {
-    // In iframe or cross-origin — keep hidden
-  }
+  } catch(e) {}
   D.msgs=document.getElementById("msgs");
   D.inp=document.getElementById("inp");
   D.sbtn=document.getElementById("sbtn");
