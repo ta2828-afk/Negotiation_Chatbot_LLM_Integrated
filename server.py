@@ -194,7 +194,7 @@ if __name__ == '__main__':
         print("ERROR: Set ANTHROPIC_API_KEY in environment variables")
     else:
         print(f"API key loaded: {key[:8]}...")
-    port = int(os.getenv("PORT", 5000))
+    port = int(os.getenv("PORT", 7860))
     print(f"Server starting on port {port}")
     # host=0.0.0.0 is required for Render to detect the port
     # debug=False prevents the reloader from confusing Render
