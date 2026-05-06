@@ -160,7 +160,20 @@ var API_KEY = ""; // handled by Python server
 // ── CONDITION ─────────────────────────────────────────────────
 // For Qualtrics replace with: "${e://Field/condition}"
 // Condition set by Qualtrics randomizer via embedded data
-var CONDITION = "${e://Field/condition}" || "Nancy_Hedged";
+var CONDITION_RAW = "${e://Field/condition}" || "Nancy_Hedged";
+// Map Qualtrics values to code values
+var CONDITION_MAP = {
+  "NancyHedge":  "Nancy_Hedged",
+  "NateHedge":   "Nate_Hedged",
+  "NancyDirect": "Nancy_Direct",
+  "NateDirect":  "Nate_Direct",
+  // Also keep original values as fallback
+  "Nancy_Hedged": "Nancy_Hedged",
+  "Nate_Hedged":  "Nate_Hedged",
+  "Nancy_Direct": "Nancy_Direct",
+  "Nate_Direct":  "Nate_Direct"
+};
+var CONDITION = CONDITION_MAP[CONDITION_RAW] || "Nancy_Hedged";
 
 // ── MALIA'S ALLHEDGES2 LIST (source reference) ────────────────
 // Full list preserved for documentation. Subset used in offer lines
