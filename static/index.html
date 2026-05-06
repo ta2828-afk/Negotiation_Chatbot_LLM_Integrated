@@ -883,9 +883,22 @@ window.onload=function(){
   D.errmsg=document.getElementById("errmsg");
   D.sbtn.addEventListener("click",function(){capture();});
   D.inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&submitOk)capture();});
-  document.getElementById("condSel").addEventListener("change",function(){CONDITION=this.value;reset();});
+  document.getElementById("condSel").addEventListener("change",function(){
+    CONDITION=CONDITION_MAP[this.value]||this.value; reset();
+  });
   document.getElementById("rbtn").addEventListener("click",reset);
-  CONDITION=document.getElementById("condSel").value;
+  // Do NOT overwrite CONDITION here — already set from URL param above
+  // Sync dropdown to show current condition
+  var condSel = document.getElementById("condSel");
+  if (condSel) {
+    // Find matching option
+    for (var i=0; i<condSel.options.length; i++) {
+      if (CONDITION_MAP[condSel.options[i].value] === CONDITION ||
+          condSel.options[i].value === CONDITION) {
+        condSel.selectedIndex = i; break;
+      }
+    }
+  }
   reset();
 };
 </script>
