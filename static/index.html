@@ -91,7 +91,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 </head>
 <body>
 
-<div class="rbar">
+<div class="rbar" id="rbar" style="display:none">
   <span class="rtag">Researcher</span>
   <label>Condition:</label>
   <select id="condSel">
@@ -866,15 +866,15 @@ function reset() {
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=function(){
-  // Hide researcher bar when embedded in iframe (Qualtrics)
+  // Show researcher bar only when NOT in iframe (direct HF access)
+  // Hidden by default — only visible to researcher testing directly
   try {
-    if (window.self !== window.top) {
+    if (window.self === window.top) {
       var rbar = document.querySelector(".rbar");
-      if (rbar) rbar.style.display = "none";
+      if (rbar) rbar.style.display = "flex";
     }
   } catch(e) {
-    var rbar = document.querySelector(".rbar");
-    if (rbar) rbar.style.display = "none";
+    // In iframe or cross-origin — keep hidden
   }
   D.msgs=document.getElementById("msgs");
   D.inp=document.getElementById("inp");
