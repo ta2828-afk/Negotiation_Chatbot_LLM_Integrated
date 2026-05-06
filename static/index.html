@@ -91,7 +91,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 </head>
 <body>
 
-<div class="rbar" style="display:none">
+<div class="rbar">
   <span class="rtag">Researcher</span>
   <label>Condition:</label>
   <select id="condSel">
@@ -157,8 +157,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 var API_KEY = ""; // handled by Python server
 
 // ── CONDITION ─────────────────────────────────────────────────
-// Condition set by Qualtrics randomizer via embedded data
-var CONDITION_RAW = "${e://Field/condition}" || "Nancy_Hedged";
+// For Qualtrics replace with: "${e://Field/condition}"
 var CONDITION_MAP = {
   "NancyHedge":  "Nancy_Hedged",
   "NateHedge":   "Nate_Hedged",
@@ -169,6 +168,9 @@ var CONDITION_MAP = {
   "Nancy_Direct": "Nancy_Direct",
   "Nate_Direct":  "Nate_Direct"
 };
+// Read condition from URL param: ?condition=NancyHedge
+var urlParams = new URLSearchParams(window.location.search);
+var CONDITION_RAW = urlParams.get("condition") || "Nancy_Hedged";
 var CONDITION = CONDITION_MAP[CONDITION_RAW] || "Nancy_Hedged";
 
 // ── MALIA'S ALLHEDGES2 LIST (source reference) ────────────────
@@ -735,7 +737,7 @@ async function capture() {
 
   switch(intent) {
     case "GREETING":
-      if (round===1&&si===1) {
+      if (round===1&&si===2) {
         var ep=vp(pxFromGreeting(raw));
         if(ep!==null){handle(raw,ep);return;}
         fire([pk(c.greeting,gc)],function(){gc++;enInp(true);startInact();},false);
@@ -864,6 +866,16 @@ function reset() {
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=function(){
+  // Hide researcher bar when embedded in iframe (Qualtrics)
+  try {
+    if (window.self !== window.top) {
+      var rbar = document.querySelector(".rbar");
+      if (rbar) rbar.style.display = "none";
+    }
+  } catch(e) {
+    var rbar = document.querySelector(".rbar");
+    if (rbar) rbar.style.display = "none";
+  }
   D.msgs=document.getElementById("msgs");
   D.inp=document.getElementById("inp");
   D.sbtn=document.getElementById("sbtn");
