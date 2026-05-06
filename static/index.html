@@ -592,7 +592,7 @@ async function classifyIntent(message) {
     "Seller: \""+message+"\"",
     "",
     "PRICE      — contains a number as a price offer (e.g. $80, 90, how about 75, maybe 100)",
-    "ACCEPT     — agrees to current offer, no new number (e.g. deal, ok, sure, fine, sold)",
+    "ACCEPT     — agrees to current offer, no new number (e.g. deal, ok, sure, fine, sold, done, yes, agreed, sounds good, works for me, ill take it, i accept)",
     "WALKAWAY   — wants to stop negotiating (e.g. not interested, bye, forget it, done)",
     "SUSPICION  — thinks buyer is a bot (e.g. are you real, you seem like AI)",
     "ABUSIVE    — rude or hostile language",
@@ -682,6 +682,24 @@ async function capture() {
     var howAreYou = rawLower.indexOf("how are you")!==-1 || rawLower.indexOf("how r u")!==-1 || rawLower.indexOf("how are u")!==-1;
     var greetBank = (howAreYou && c.greeting_howareyou) ? c.greeting_howareyou : c.greeting;
     fire([pk(greetBank,gc)],function(){gc++;enInp(true);startInact();},false);
+    return;
+  }
+
+  // Simple accept words — check before LLM to avoid misclassification
+  var ACCEPT_KW = ["done","deal","sold","agreed","yes","ok","okay","fine","sure",
+    "sounds good","works for me","i'll take it","ill take it","i accept","perfect",
+    "great","that works","let's do it","lets do it"];
+  var isSimpleAccept = ACCEPT_KW.some(function(w){ return rawLower.trim()===w || rawLower.trim()===w+"!"; });
+  if (isSimpleAccept && lastBuyerOffer > 0) {
+    var da = lastBuyerOffer;
+    typing(false);
+    fire([c.accept], function(){
+      addSys("Deal reached at $"+da+" in round "+round);
+      done=true; enInp(false);
+      document.getElementById("stnote").textContent="Deal at $"+da;
+      document.getElementById("hbadge").textContent="Deal at $"+da;
+      save(da, round, true);
+    }, false);
     return;
   }
 
