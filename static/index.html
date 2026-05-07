@@ -531,7 +531,11 @@ function handle(txt,preP) {
   round++; updateUI();
   if(LADDER[round]) lastBuyerOffer=LADDER[round];
   var currentCeiling=(lastBuyerOffer>=100)?BUYER_MAX_FINAL:BUYER_MAX;
-  if(p<=currentCeiling){
+  // Also accept if seller price matches the bot's NEXT planned offer
+  // e.g. seller says $95 and bot was about to offer $95 anyway
+  var nextBotOffer = LADDER[round] || 0;
+  var matchesNextOffer = (p === nextBotOffer && nextBotOffer >= 70); // only for meaningful prices
+  if(p<=currentCeiling || matchesNextOffer){
     fire([c.accept],function(){
       addSys("Deal reached at $"+p+" in round "+round);
       done=true; enInp(false);
@@ -671,7 +675,11 @@ async function capture() {
     fire([pk(c.identity,gc)],function(){gc++;enInp(true);startInact();},false);
     return;
   }
-  if (isFirstTurn && !hasIdentity && !hasSuspicion && GREET_KW.some(function(w){ return rawLower.indexOf(w)!==-1; })) {
+  // Don't fire greeting if message also contains accept/price intent words
+  var GREET_OVERRIDE_KW = ["accept","deal","sold","agree","take it","works","ok","done",
+    "sure","fine","yes","offer","price","selling","how much","want","buy"];
+  var hasOtherIntent = GREET_OVERRIDE_KW.some(function(w){ return rawLower.indexOf(w)!==-1; });
+  if (isFirstTurn && !hasIdentity && !hasSuspicion && !hasOtherIntent && GREET_KW.some(function(w){ return rawLower.indexOf(w)!==-1; })) {
     var ep=vp(pxFromGreeting(raw));
     if (ep!==null) { typing(false); handle(raw,ep); return; }
     var dbg3=document.getElementById("debug-intent");
