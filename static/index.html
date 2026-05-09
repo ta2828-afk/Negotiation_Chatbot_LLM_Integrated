@@ -157,7 +157,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 var API_KEY = ""; // handled by Python server
 
 // ── CONDITION ─────────────────────────────────────────────────
-// Reads condition from URL parameter: ?condition=NancyHedge
+// For Qualtrics replace with: "${e://Field/condition}"
 var CONDITION_MAP = {
   "NancyHedge":  "Nancy_Hedged",
   "NateHedge":   "Nate_Hedged",
@@ -431,7 +431,19 @@ function addBuyer(txt) {
   chatLog.push({speaker:"buyer",msg:txt,t:new Date().toISOString()});
   var row=mk("div","row buyer"),av=mk("div","mav b"),grp=mk("div","grp");
   var b=mk("div","bbl"),ts=mk("div","ts");
-  av.textContent=C().init; b.textContent=txt; ts.textContent=tstamp();
+  // Use avatar image instead of N text
+  var isNancy = C().name === "Nancy";
+  var imgUrl = isNancy
+    ? "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxlbGxpcHNlIGN4PSI1MCIgY3k9IjM4IiByeD0iMjUiIHJ5PSIyOCIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSIzMiIgY3k9IjU4IiByeD0iOSIgcnk9IjI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjY4IiBjeT0iNTgiIHJ4PSI5IiByeT0iMjciIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iMjgiIGN5PSI3OCIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjM3IiBjeT0iODMiIHJ4PSI3IiByeT0iNyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI3MiIgY3k9Ijc4IiByeD0iOCIgcnk9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iNjMiIGN5PSI4MyIgcng9IjciIHJ5PSI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iMzYiIHk9IjcyIiB3aWR0aD0iMjgiIGhlaWdodD0iMzAiIHJ4PSI4IiBmaWxsPSIjZDRiODk2Ii8+CiAgPHJlY3QgeD0iNDQiIHk9IjY1IiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI1MCIgeTE9IjIyIiB4Mj0iNTAiIHkyPSIzMSIgc3Ryb2tlPSIjMmEyYTJhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjY4IiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI0MCIgeTE9IjQ2IiB4Mj0iMzgiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNDMiIHkxPSI0NSIgeDI9IjQzIiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjQ2IiB5MT0iNDYiIHgyPSI0NyIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSI1NCIgeTE9IjQ2IiB4Mj0iNTMiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNTciIHkxPSI0NSIgeDI9IjU3IiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjYwIiB5MT0iNDYiIHgyPSI2MiIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1NyBRNTAgNjMgNTYgNTciIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4="
+    : "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxyZWN0IHg9IjIyIiB5PSI3MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjMwIiByeD0iOCIgZmlsbD0iIzFlM2E1ZiIvPgogIDxyZWN0IHg9IjQ2IiB5PSI3MiIgd2lkdGg9IjgiIGhlaWdodD0iMTgiIGZpbGw9IiNmZmYiLz4KICA8cG9seWdvbiBwb2ludHM9IjUwLDc0IDQ3LDg0IDUzLDg0IiBmaWxsPSIjYmUxODVkIi8+CiAgPHJlY3QgeD0iNDQiIHk9IjYyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxyZWN0IHg9IjMwIiB5PSIzMSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8cmVjdCB4PSIzMCIgeT0iMzkiIHdpZHRoPSI2IiBoZWlnaHQ9IjkiIHJ4PSIzIiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iNjQiIHk9IjM5IiB3aWR0aD0iNiIgaGVpZ2h0PSI5IiByeD0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1OCBRNTAgNjUgNTYgNTgiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4=";
+  var img = document.createElement("img");
+  img.src = imgUrl;
+  img.style.cssText = "width:26px;height:26px;border-radius:50%;object-fit:cover;display:block;";
+  av.style.background = "transparent";
+  av.style.overflow = "hidden";
+  av.style.padding = "0";
+  av.appendChild(img);
+  b.textContent=txt; ts.textContent=tstamp();
   grp.appendChild(b); grp.appendChild(ts); row.appendChild(av); row.appendChild(grp);
   D.msgs.appendChild(row); scroll();
 }
@@ -531,10 +543,8 @@ function handle(txt,preP) {
   round++; updateUI();
   if(LADDER[round]) lastBuyerOffer=LADDER[round];
   var currentCeiling=(lastBuyerOffer>=100)?BUYER_MAX_FINAL:BUYER_MAX;
-  // Also accept if seller price matches the bot's NEXT planned offer
-  // e.g. seller says $95 and bot was about to offer $95 anyway
   var nextBotOffer = LADDER[round] || 0;
-  var matchesNextOffer = (p === nextBotOffer && nextBotOffer >= 70); // only for meaningful prices
+  var matchesNextOffer = (p === nextBotOffer && nextBotOffer >= 70);
   if(p<=currentCeiling || matchesNextOffer){
     fire([c.accept],function(){
       addSys("Deal reached at $"+p+" in round "+round);
@@ -566,18 +576,33 @@ function handle(txt,preP) {
 
 // ── SAVE ──────────────────────────────────────────────────────
 function save(price,rnd,reached) {
+  var transcript = chatLog.map(function(e){
+    if(e.speaker==="system") return null;
+    var name = e.speaker==="buyer" ? C().name : "You";
+    var time = new Date(e.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    return name+" ("+time+"): "+e.msg;
+  }).filter(Boolean).join("\n");
+
+  // postMessage to parent Qualtrics page
   try {
-    Qualtrics.SurveyEngine.setEmbeddedData("deal_price",price);
-    Qualtrics.SurveyEngine.setEmbeddedData("deal_round",rnd);
-    Qualtrics.SurveyEngine.setEmbeddedData("deal_reached",reached?"1":"0");
-    Qualtrics.SurveyEngine.setEmbeddedData("chat_log",JSON.stringify(chatLog));
-    var transcript=chatLog.map(function(e){
-      if(e.speaker==="system") return null;
-      var name=e.speaker==="buyer"?C().name:"You";
-      var time=new Date(e.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-      return name+" ("+time+"): "+e.msg;
-    }).filter(Boolean).join("\n");
-    Qualtrics.SurveyEngine.setEmbeddedData("chat_transcript",transcript);
+    window.parent.postMessage({
+      type:            "CHATBOT_COMPLETE",
+      deal_price:      String(price||"0"),
+      deal_round:      String(rnd||"0"),
+      deal_reached:    reached?"1":"0",
+      chat_log:        JSON.stringify(chatLog),
+      chat_transcript: transcript,
+      condition:       CONDITION
+    }, "*");
+  } catch(e) {}
+
+  // Direct Qualtrics API fallback
+  try {
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_price",     String(price||"0"));
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_round",     String(rnd||"0"));
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_reached",   reached?"1":"0");
+    Qualtrics.SurveyEngine.setEmbeddedData("chat_log",       JSON.stringify(chatLog));
+    Qualtrics.SurveyEngine.setEmbeddedData("chat_transcript", transcript);
   } catch(e) {}
 }
 
@@ -596,7 +621,7 @@ async function classifyIntent(message) {
     "Seller: \""+message+"\"",
     "",
     "PRICE      — contains a number as a price offer (e.g. $80, 90, how about 75, maybe 100)",
-    "ACCEPT     — agrees to current offer, no new number (e.g. deal, ok, sure, fine, sold, done, yes, agreed, sounds good, works for me, ill take it, i accept)",
+    "ACCEPT     — agrees to current offer, no new number (e.g. deal, ok, sure, fine, sold)",
     "WALKAWAY   — wants to stop negotiating (e.g. not interested, bye, forget it, done)",
     "SUSPICION  — thinks buyer is a bot (e.g. are you real, you seem like AI)",
     "ABUSIVE    — rude or hostile language",
@@ -861,11 +886,32 @@ async function capture() {
 // ── RESET ─────────────────────────────────────────────────────
 function condUI() {
   var c=C();
-  document.getElementById("hav").textContent=c.init;
   document.getElementById("hname").textContent=c.name;
-  document.getElementById("tav").textContent=c.init;
   document.getElementById("rpill").textContent=CONDITION.replace("_"," / ");
+
+  var isNancy  = c.name === "Nancy";
+  var avBorder = isNancy ? "#f9a8d4" : "#93c5fd";
+  var imgUrl   = isNancy
+    ? "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxlbGxpcHNlIGN4PSI1MCIgY3k9IjM4IiByeD0iMjUiIHJ5PSIyOCIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSIzMiIgY3k9IjU4IiByeD0iOSIgcnk9IjI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjY4IiBjeT0iNTgiIHJ4PSI5IiByeT0iMjciIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iMjgiIGN5PSI3OCIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjM3IiBjeT0iODMiIHJ4PSI3IiByeT0iNyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI3MiIgY3k9Ijc4IiByeD0iOCIgcnk9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iNjMiIGN5PSI4MyIgcng9IjciIHJ5PSI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iMzYiIHk9IjcyIiB3aWR0aD0iMjgiIGhlaWdodD0iMzAiIHJ4PSI4IiBmaWxsPSIjZDRiODk2Ii8+CiAgPHJlY3QgeD0iNDQiIHk9IjY1IiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI1MCIgeTE9IjIyIiB4Mj0iNTAiIHkyPSIzMSIgc3Ryb2tlPSIjMmEyYTJhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjY4IiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI0MCIgeTE9IjQ2IiB4Mj0iMzgiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNDMiIHkxPSI0NSIgeDI9IjQzIiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjQ2IiB5MT0iNDYiIHgyPSI0NyIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSI1NCIgeTE9IjQ2IiB4Mj0iNTMiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNTciIHkxPSI0NSIgeDI9IjU3IiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjYwIiB5MT0iNDYiIHgyPSI2MiIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1NyBRNTAgNjMgNTYgNTciIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4="
+    : "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxyZWN0IHg9IjIyIiB5PSI3MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjMwIiByeD0iOCIgZmlsbD0iIzFlM2E1ZiIvPgogIDxyZWN0IHg9IjQ2IiB5PSI3MiIgd2lkdGg9IjgiIGhlaWdodD0iMTgiIGZpbGw9IiNmZmYiLz4KICA8cG9seWdvbiBwb2ludHM9IjUwLDc0IDQ3LDg0IDUzLDg0IiBmaWxsPSIjYmUxODVkIi8+CiAgPHJlY3QgeD0iNDQiIHk9IjYyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxyZWN0IHg9IjMwIiB5PSIzMSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8cmVjdCB4PSIzMCIgeT0iMzkiIHdpZHRoPSI2IiBoZWlnaHQ9IjkiIHJ4PSIzIiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iNjQiIHk9IjM5IiB3aWR0aD0iNiIgaGVpZ2h0PSI5IiByeD0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1OCBRNTAgNjUgNTYgNTgiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4=";
+
+  ["hav","tav"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = "";
+    var img = document.createElement("img");
+    img.src = imgUrl;
+    img.width = id === "hav" ? 38 : 26;
+    img.height = id === "hav" ? 38 : 26;
+    img.style.cssText = "border-radius:50%;object-fit:cover;display:block;";
+    el.appendChild(img);
+    el.style.background  = "transparent";
+    el.style.borderColor = avBorder;
+    el.style.padding     = "0";
+    el.style.overflow    = "hidden";
+  });
 }
+
 function reset() {
   round=0;si=1;done=false;submitOk=false;lastBuyerOffer=50;
   inactLvl=0;lastPrice=null;chatLog=[];
@@ -891,16 +937,6 @@ function reset() {
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=function(){
-  // Show researcher bar only when accessed directly (no condition param)
-  // Hides automatically when loaded as iframe in Qualtrics
-  try {
-    var params = new URLSearchParams(window.location.search);
-    var inIframe = (window.self !== window.top);
-    if (!inIframe && params.get("condition") === null) {
-      var rbar = document.querySelector(".rbar");
-      if (rbar) rbar.style.display = "flex";
-    }
-  } catch(e) {}
   D.msgs=document.getElementById("msgs");
   D.inp=document.getElementById("inp");
   D.sbtn=document.getElementById("sbtn");
@@ -913,14 +949,20 @@ window.onload=function(){
     CONDITION=CONDITION_MAP[this.value]||this.value; reset();
   });
   document.getElementById("rbtn").addEventListener("click",reset);
-  // Do NOT overwrite CONDITION here — already set from URL param above
-  // Sync dropdown to show current condition
+  // Show researcher bar only when accessed directly without condition param
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var inIframe = (window.self !== window.top);
+    if (!inIframe && params.get("condition") === null) {
+      var rbar = document.querySelector(".rbar");
+      if (rbar) rbar.style.display = "flex";
+    }
+  } catch(e) {}
+  // Sync dropdown to current condition, do NOT overwrite CONDITION
   var condSel = document.getElementById("condSel");
   if (condSel) {
-    // Find matching option
     for (var i=0; i<condSel.options.length; i++) {
-      if (CONDITION_MAP[condSel.options[i].value] === CONDITION ||
-          condSel.options[i].value === CONDITION) {
+      if (CONDITION_MAP[condSel.options[i].value]===CONDITION || condSel.options[i].value===CONDITION) {
         condSel.selectedIndex = i; break;
       }
     }
