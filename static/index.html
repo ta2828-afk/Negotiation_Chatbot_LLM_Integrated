@@ -91,6 +91,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:20px 12px 32p
 </head>
 <body>
 
+
 <div class="rbar" id="rbar" style="display:none">
   <span class="rtag">Researcher</span>
   <label>Condition:</label>
@@ -159,14 +160,10 @@ var API_KEY = ""; // handled by Python server
 // ── CONDITION ─────────────────────────────────────────────────
 // For Qualtrics replace with: "${e://Field/condition}"
 var CONDITION_MAP = {
-  "NancyHedge":  "Nancy_Hedged",
-  "NateHedge":   "Nate_Hedged",
-  "NancyDirect": "Nancy_Direct",
-  "NateDirect":  "Nate_Direct",
-  "Nancy_Hedged": "Nancy_Hedged",
-  "Nate_Hedged":  "Nate_Hedged",
-  "Nancy_Direct": "Nancy_Direct",
-  "Nate_Direct":  "Nate_Direct"
+  "NancyHedge":"Nancy_Hedged","NateHedge":"Nate_Hedged",
+  "NancyDirect":"Nancy_Direct","NateDirect":"Nate_Direct",
+  "Nancy_Hedged":"Nancy_Hedged","Nate_Hedged":"Nate_Hedged",
+  "Nancy_Direct":"Nancy_Direct","Nate_Direct":"Nate_Direct"
 };
 var urlParams = new URLSearchParams(window.location.search);
 var CONDITION_RAW = urlParams.get("condition") || "Nancy_Hedged";
@@ -230,13 +227,14 @@ var S = {
     identity:  ["I'm Nancy! just here looking to buy a concert ticket — what price were you possibly thinking?","it's Nancy — just a buyer on here. what price might work for you?","Nancy here, just trying to find a good deal — what price were you maybe thinking?"],
     greeting_howareyou: ["hi! doing well, thanks — what price were you possibly thinking?","hey, good thanks! what price might work for you?","good, thanks! what price were you maybe thinking?"],
     suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side — what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you possibly thinking?"],
-    offtopic:  ["ha, fair enough — what price were you possibly thinking?","got it — I'm not sure what number works for you though.","noted — what price might work for you?"],
+    offtopic:  ["what price were you possibly thinking?","I'm not sure I follow — what price might work for you?","ok, so what price were you possibly thinking?"],
     abusive:   ["let's focus on the price — what were you possibly thinking?","what price might work for you?"],
     walkaway:  ["I think we might possibly be able to work something out. any flexibility?","maybe there's some wiggle room? what price could possibly work?"],
     walkaway2: ["understood. good luck.","ok. take care."],
-    whyreason: ["that's just the number I'm working with — what price might work for you?","I suppose that's just my budget. what were you possibly thinking?","I think that's just where I'm at. what price might work?"],
+    whyreason: ["I think AMOUNT is possibly still my best offer — what price might work for you?","I'm not sure I can go higher than AMOUNT right now — what were you thinking?","AMOUNT is possibly still where I'm at — I'm not sure I have much more wiggle room.","I suppose AMOUNT is still my offer — what price could possibly work for you?"],
     reiterate: ["I think my offer is still AMOUNT — what price works for you?","I suppose I'm still at AMOUNT. what were you thinking?","I'm possibly still at AMOUNT — what price might work?"],
     highball:  ["that's higher than I was thinking. what's the lowest you might consider?","I think that's a bit high for me. what price could possibly work?"],
+    maxQuestion: ["I'm not sure I can go much higher than AMOUNT — I think that might possibly be close to my limit. what price were you thinking?","I suppose AMOUNT is possibly close to where I top out — what price might work for you?","I think I'm possibly near my limit at AMOUNT — what were you thinking?"],
     ridiculous:["I don't think that's a serious offer. what price were you possibly thinking?","I suppose that's too high for me to work with. what's your actual price?","I think that's quite far from my range. what price might work?"]
   },
 
@@ -260,13 +258,14 @@ var S = {
     identity:  ["I'm Nancy! just here to buy a concert ticket — what price were you thinking?","it's Nancy — just a buyer on here. what price works?","Nancy here, just looking for a good deal — what price were you thinking?"],
     greeting_howareyou: ["hi! doing well, thanks — what price were you thinking?","hey, good thanks! what price works?","good, thanks! what price were you thinking?"],
     suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side. what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you thinking?"],
-    offtopic:  ["ha, fair enough — what price were you thinking?","got it — what number did you have in mind?","noted — what price works for you?"],
+    offtopic:  ["what price were you thinking?","I'm not sure I follow — what price works for you?","ok, so what price were you thinking?"],
     abusive:   ["let's focus on the price — what were you thinking?","what price works for you?"],
     walkaway:  ["I think we can work something out. any flexibility?","there's room to negotiate. what price works?"],
     walkaway2: ["understood. good luck.","ok. take care."],
-    whyreason: ["that's just the number I'm working with. what price works for you?","that's my budget. what were you thinking?","that's just where I'm at. what price works?"],
+    whyreason: ["AMOUNT is my offer — I'm not moving from here.","I'm staying at AMOUNT. what price works for you?","AMOUNT is still on the table — take it or tell me your number."],
     reiterate: ["my offer is AMOUNT. what price works for you?","I'm at AMOUNT. what were you thinking?","still AMOUNT. what price works?"],
     highball:  ["that's higher than I was thinking. what's the lowest you'd consider?","that's too high for me. what price works?"],
+    maxQuestion: ["I'm at AMOUNT and that's close to my limit. what price works for you?","AMOUNT is near my ceiling. what price are you looking for?","I can't go much higher than AMOUNT. what price works?"],
     ridiculous:["that's not a serious offer. what price were you thinking?","that's too high for me to work with. what's your actual price?","that's too far from my range. what price works?"]
   },
 
@@ -289,13 +288,14 @@ var S = {
     identity:  ["I'm Nate! just here looking to buy a concert ticket — what price were you possibly thinking?","it's Nate — just a buyer on here. what price might work for you?","Nate here, just trying to find a good deal — what price were you maybe thinking?"],
     greeting_howareyou: ["hi! doing well, thanks — what price were you possibly thinking?","hey, good thanks! what price might work for you?","good, thanks! what price were you maybe thinking?"],
     suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side — what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you possibly thinking?"],
-    offtopic:  ["ha, fair enough — what price were you possibly thinking?","got it — I'm not sure what number works for you though.","noted — what price might work for you?"],
+    offtopic:  ["what price were you possibly thinking?","I'm not sure I follow — what price might work for you?","ok, so what price were you possibly thinking?"],
     abusive:   ["let's focus on the price — what were you possibly thinking?","what price might work for you?"],
     walkaway:  ["I think we might possibly be able to work something out. any flexibility?","maybe there's some wiggle room? what price could possibly work?"],
     walkaway2: ["understood. good luck.","ok. take care."],
-    whyreason: ["that's just the number I'm working with — what price might work for you?","I suppose that's just my budget. what were you possibly thinking?","I think that's just where I'm at. what price might work?"],
+    whyreason: ["I think AMOUNT is possibly still my best offer — what price might work for you?","I'm not sure I can go higher than AMOUNT right now — what were you thinking?","AMOUNT is possibly still where I'm at — I'm not sure I have much more wiggle room.","I suppose AMOUNT is still my offer — what price could possibly work for you?"],
     reiterate: ["I think my offer is still AMOUNT — what price works for you?","I suppose I'm still at AMOUNT. what were you thinking?","I'm possibly still at AMOUNT — what price might work?"],
     highball:  ["that's higher than I was thinking. what's the lowest you might consider?","I think that's a bit high for me. what price could possibly work?"],
+    maxQuestion: ["I'm not sure I can go much higher than AMOUNT — I think that might possibly be close to my limit. what price were you thinking?","I suppose AMOUNT is possibly close to where I top out — what price might work for you?","I think I'm possibly near my limit at AMOUNT — what were you thinking?"],
     ridiculous:["I don't think that's a serious offer. what price were you possibly thinking?","I suppose that's too high for me to work with. what's your actual price?","I think that's quite far from my range. what price might work?"]
   },
 
@@ -318,13 +318,14 @@ var S = {
     identity:  ["I'm Nate! just here to buy a concert ticket — what price were you thinking?","it's Nate — just a buyer on here. what price works?","Nate here, just looking for a good deal — what price were you thinking?"],
     greeting_howareyou: ["hi! doing well, thanks — what price were you thinking?","hey, good thanks! what price works?","good, thanks! what price were you thinking?"],
     suspicion: ["I am a real person doing this study on Prolific in the buyer's role. Can we get back to the price?","just another Prolific participant here on the buyer's side. what price were you thinking?","I'm doing the buyer role for this study on Prolific. what price were you thinking?"],
-    offtopic:  ["ha, fair enough — what price were you thinking?","got it — what number did you have in mind?","noted — what price works for you?"],
+    offtopic:  ["what price were you thinking?","I'm not sure I follow — what price works for you?","ok, so what price were you thinking?"],
     abusive:   ["let's focus on the price — what were you thinking?","what price works for you?"],
     walkaway:  ["I think we can work something out. any flexibility?","there's room to negotiate. what price works?"],
     walkaway2: ["understood. good luck.","ok. take care."],
-    whyreason: ["that's just the number I'm working with. what price works for you?","that's my budget. what were you thinking?","that's just where I'm at. what price works?"],
+    whyreason: ["AMOUNT is my offer — I'm not moving from here.","I'm staying at AMOUNT. what price works for you?","AMOUNT is still on the table — take it or tell me your number."],
     reiterate: ["my offer is AMOUNT. what price works for you?","I'm at AMOUNT. what were you thinking?","still AMOUNT. what price works?"],
     highball:  ["that's higher than I was thinking. what's the lowest you'd consider?","that's too high for me. what price works?"],
+    maxQuestion: ["I'm at AMOUNT and that's close to my limit. what price works for you?","AMOUNT is near my ceiling. what price are you looking for?","I can't go much higher than AMOUNT. what price works?"],
     ridiculous:["that's not a serious offer. what price were you thinking?","that's too high for me to work with. what's your actual price?","that's too far from my range. what price works?"]
   }
 };
@@ -357,7 +358,7 @@ function applyTypo(text) {
 var BUYER_MAX = 90, BUYER_MAX_FINAL = 100;
 var LADDER = {1:50, 2:70, 3:85, 4:85, 5:95, 6:95, 7:100};
 var HIGHBALL = 120, RIDICULOUS = 500;
-var TPC = 50, TBASE = 400, TSTART = 1400;
+var TPC = 100, TBASE = 900, TSTART = 2000;
 var TINACT = 120000, TDISCONNECT = 600000;
 
 // ── STATE ─────────────────────────────────────────────────────
@@ -366,6 +367,8 @@ var inactTimer=null, inactLvl=0, disconnectTimer=null;
 var chatLog=[], lastPrice=null;
 var nc=0,sc=0,ac=0,wc=0,wc2=0,oc=0,gc=0,rc=0,wrc=0,hc=0,rc2=0;
 var awaitingWalkawayConfirm=false; lastSellerPrice=null;
+var awaitingDealConfirm=false; var pendingDealPrice=0;
+var lastCompetingPrice=null;
 var D={};
 
 // ── HELPERS ───────────────────────────────────────────────────
@@ -385,12 +388,19 @@ function px(t) {
   if (dm && dm.length) return parseFloat(dm[dm.length-1].replace(/[^\d.]/g,""));
   var m = t.match(/\b(\d+)\s*(?:dollars?|bucks?)/i);
   if (m) return parseFloat(m[1]);
-  var blockP = [/paid\s+\$?\d+/i,/spent\s+\$?\d+/i,/cost\s+\$?\d+/i,/worth\s+\$?\d+/i];
+  var blockP = [/paid\s+\$?\d+/i,/spent\s+\$?\d+/i,/cost\s+\$?\d+/i,/worth\s+\$?\d+/i,/worth\s+\$\d+/i,/only\s+\$?\d+\s*(more|higher|less|lower|above|below|difference)/i,/just\s+\$?\d+\s*(more|higher|less|lower|above|below)/i,/\$?\d+\s*(more|higher|less|lower)\s+than/i];
   var offerW = ["want","take","accept","offer","asking","sell","how about","maybe",
     "thinking","looking for","willing","do","need","happy with","fine with",
     "okay with","work for","what about","around","for","at","about","roughly","approximately",
     "below","above","under","over","minimum","maximum","least","most","cannot","won't",
-    "wont","going","less than","more than","lower than","higher than","not less","not below"];
+    "wont","going","less than","more than","lower than","higher than","not less","not below",
+    "ok","sure","possibly","perhaps","maybe","how about","what if","could do",
+    "can do","would do","settle for","agree to","go with","try","consider",
+    "said","told","mentioned","asked for","looking at","need","want it at",
+    "it's","its","it is","is my","my price","price is","works","final",
+    "still","last offer","my offer","the price","that's my","thats my",
+    "is the price","will be","should be","has to be","must be","no its",
+    "no it","price of","value is","worth"];
   var hasOW = offerW.some(function(w){ return lower.indexOf(w)!==-1; });
   if (hasOW) {
     var bm = t.match(/\b(\d+)\b/g);
@@ -405,8 +415,11 @@ function px(t) {
   }
   var sm = t.trim().match(/^\$\s*(\d+(?:\.\d{1,2})?)$/);
   if (sm) return parseFloat(sm[1]);
-  var sm2 = t.trim().match(/^(\d+)$/);
+  var sm2 = t.trim().replace(/[?!.,]+$/, '').trim().match(/^(\d+)$/);
   if (sm2) { var n=parseFloat(sm2[1]); if(n>=10&&n<=10000) return n; }
+  // Also handle "$110?" format
+  var sm3 = t.trim().replace(/[?!.,]+$/, '').trim().match(/^\$\s*(\d+(?:\.\d{1,2})?)$/);
+  if (sm3) { var n2=parseFloat(sm3[1]); if(n2>=10&&n2<=10000) return n2; }
   return null;
 }
 function vp(p) { if(p===null||p===undefined||p<=0||p>10000) return null; return p; }
@@ -431,18 +444,12 @@ function addBuyer(txt) {
   chatLog.push({speaker:"buyer",msg:txt,t:new Date().toISOString()});
   var row=mk("div","row buyer"),av=mk("div","mav b"),grp=mk("div","grp");
   var b=mk("div","bbl"),ts=mk("div","ts");
-  // Use avatar image instead of N text
-  var isNancy = C().name === "Nancy";
-  var imgUrl = isNancy
-    ? "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxlbGxpcHNlIGN4PSI1MCIgY3k9IjM4IiByeD0iMjUiIHJ5PSIyOCIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSIzMiIgY3k9IjU4IiByeD0iOSIgcnk9IjI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjY4IiBjeT0iNTgiIHJ4PSI5IiByeT0iMjciIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iMjgiIGN5PSI3OCIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjM3IiBjeT0iODMiIHJ4PSI3IiByeT0iNyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI3MiIgY3k9Ijc4IiByeD0iOCIgcnk9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iNjMiIGN5PSI4MyIgcng9IjciIHJ5PSI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iMzYiIHk9IjcyIiB3aWR0aD0iMjgiIGhlaWdodD0iMzAiIHJ4PSI4IiBmaWxsPSIjZDRiODk2Ii8+CiAgPHJlY3QgeD0iNDQiIHk9IjY1IiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI1MCIgeTE9IjIyIiB4Mj0iNTAiIHkyPSIzMSIgc3Ryb2tlPSIjMmEyYTJhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjY4IiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI0MCIgeTE9IjQ2IiB4Mj0iMzgiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNDMiIHkxPSI0NSIgeDI9IjQzIiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjQ2IiB5MT0iNDYiIHgyPSI0NyIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSI1NCIgeTE9IjQ2IiB4Mj0iNTMiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNTciIHkxPSI0NSIgeDI9IjU3IiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjYwIiB5MT0iNDYiIHgyPSI2MiIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1NyBRNTAgNjMgNTYgNTciIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4="
-    : "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxyZWN0IHg9IjIyIiB5PSI3MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjMwIiByeD0iOCIgZmlsbD0iIzFlM2E1ZiIvPgogIDxyZWN0IHg9IjQ2IiB5PSI3MiIgd2lkdGg9IjgiIGhlaWdodD0iMTgiIGZpbGw9IiNmZmYiLz4KICA8cG9seWdvbiBwb2ludHM9IjUwLDc0IDQ3LDg0IDUzLDg0IiBmaWxsPSIjYmUxODVkIi8+CiAgPHJlY3QgeD0iNDQiIHk9IjYyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxyZWN0IHg9IjMwIiB5PSIzMSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8cmVjdCB4PSIzMCIgeT0iMzkiIHdpZHRoPSI2IiBoZWlnaHQ9IjkiIHJ4PSIzIiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iNjQiIHk9IjM5IiB3aWR0aD0iNiIgaGVpZ2h0PSI5IiByeD0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1OCBRNTAgNjUgNTYgNTgiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4=";
-  var img = document.createElement("img");
-  img.src = imgUrl;
-  img.style.cssText = "width:26px;height:26px;border-radius:50%;object-fit:cover;display:block;";
-  av.style.background = "transparent";
-  av.style.overflow = "hidden";
-  av.style.padding = "0";
-  av.appendChild(img);
+  var isNancyB=C().name==="Nancy";
+  var imgUrlB=isNancyB?"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPjxlbGxpcHNlIGN4PSI1MCIgY3k9IjM4IiByeD0iMjUiIHJ5PSIyOCIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjU4IiByeD0iOSIgcnk9IjI3IiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjY4IiBjeT0iNTgiIHJ4PSI5IiByeT0iMjciIGZpbGw9IiMxYTFhMWEiLz48ZWxsaXBzZSBjeD0iMjgiIGN5PSI3OCIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjM3IiBjeT0iODMiIHJ4PSI3IiByeT0iNyIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSI3MiIgY3k9Ijc4IiByeD0iOCIgcnk9IjgiIGZpbGw9IiMxYTFhMWEiLz48ZWxsaXBzZSBjeD0iNjMiIGN5PSI4MyIgcng9IjciIHJ5PSI3IiBmaWxsPSIjMWExYTFhIi8+PHJlY3QgeD0iMzYiIHk9IjcyIiB3aWR0aD0iMjgiIGhlaWdodD0iMzAiIHJ4PSI4IiBmaWxsPSIjZDRiODk2Ii8+PHJlY3QgeD0iNDQiIHk9IjY1IiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPjxsaW5lIHgxPSI1MCIgeTE9IjIyIiB4Mj0iNTAiIHkyPSIzMSIgc3Ryb2tlPSIjMmEyYTJhIiBzdHJva2Utd2lkdGg9IjEuNSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzMiIHI9IjUiIGZpbGw9IiMxYTFhMWEiLz48Y2lyY2xlIGN4PSI2OCIgY3k9IjMzIiByPSI1IiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjQzIiBjeT0iNDkiIHJ4PSIzLjUiIHJ5PSIzIiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjU3IiBjeT0iNDkiIHJ4PSIzLjUiIHJ5PSIzIiBmaWxsPSIjMWExYTFhIi8+PGNpcmNsZSBjeD0iNDQiIGN5PSI0NyIgcj0iMS4yIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTgiIGN5PSI0NyIgcj0iMS4yIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTQ0IDU3IFE1MCA2MyA1NiA1NyIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPjxyZWN0IHg9IjIyIiB5PSI3MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjMwIiByeD0iOCIgZmlsbD0iIzFlM2E1ZiIvPjxyZWN0IHg9IjQ2IiB5PSI3MiIgd2lkdGg9IjgiIGhlaWdodD0iMTgiIGZpbGw9IiNmZmYiLz48cG9seWdvbiBwb2ludHM9IjUwLDc0IDQ3LDg0IDUzLDg0IiBmaWxsPSIjYmUxODVkIi8+PHJlY3QgeD0iNDQiIHk9IjYyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPjxyZWN0IHg9IjMwIiB5PSIzMSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIGZpbGw9IiMxYTFhMWEiLz48cmVjdCB4PSIzMCIgeT0iMzkiIHdpZHRoPSI2IiBoZWlnaHQ9IjkiIHJ4PSIzIiBmaWxsPSIjMWExYTFhIi8+PHJlY3QgeD0iNjQiIHk9IjM5IiB3aWR0aD0iNiIgaGVpZ2h0PSI5IiByeD0iMyIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPjxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik00NCA1OCBRNTAgNjUgNTYgNTgiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==";
+  var imgB=document.createElement("img");
+  imgB.src=imgUrlB; imgB.style.cssText="width:26px;height:26px;border-radius:50%;object-fit:cover;display:block;";
+  av.style.background="transparent"; av.style.overflow="hidden"; av.style.padding="0";
+  av.appendChild(imgB);
   b.textContent=txt; ts.textContent=tstamp();
   grp.appendChild(b); grp.appendChild(ts); row.appendChild(av); row.appendChild(grp);
   D.msgs.appendChild(row); scroll();
@@ -481,7 +488,7 @@ function fire(lines, cb, doTypo) {
     var ln=lines[i++]; if(!ln){nxt();return;}
     // Natural timing variance — real people don't respond at exactly the same speed
     // Pre-pause: 800ms-2200ms (sometimes quick, sometimes slow to "read" the message)
-    var prePause = 800 + Math.floor(Math.random() * 1400);
+    var prePause = 2500 + Math.floor(Math.random() * 2500);
     // Typing speed: base + length-based + random variance (+/- 30%)
     var baseTyping = ln.charAt(0)==="*" ? 600 : TBASE + (ln.length * TPC);
     var variance = 0.7 + (Math.random() * 0.6); // 0.7x to 1.3x
@@ -536,22 +543,24 @@ function handle(txt,preP) {
   if(p===null){ fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false); return; }
 
   // Detect if seller increased their price (going the wrong direction)
-  var sellerIncreased = (lastSellerPrice !== null && p > lastSellerPrice && p > BUYER_MAX);
+  // Only flag as increased if seller had previously come down to near BUYER_MAX, then went back up
+  // sellerIncreased: only if seller previously offered <= current bot offer, then went higher
+  var sellerIncreased = (lastSellerPrice !== null && lastSellerPrice <= lastBuyerOffer && p > lastSellerPrice && p > BUYER_MAX);
   lastSellerPrice = p; // track for next round
   if(p>RIDICULOUS){ fire([pk(c.ridiculous,rc2)],function(){rc2++;enInp(true);startInact();},false); return; }
   if(p>HIGHBALL&&round===0){ round++;updateUI(); fire([pk(c.highball,hc)],function(){hc++;enInp(true);startInact();},false); return; }
   round++; updateUI();
   if(LADDER[round]) lastBuyerOffer=LADDER[round];
   var currentCeiling=(lastBuyerOffer>=100)?BUYER_MAX_FINAL:BUYER_MAX;
-  var nextBotOffer = LADDER[round] || 0;
-  var matchesNextOffer = (p === nextBotOffer && nextBotOffer >= 70);
-  if(p<=currentCeiling || matchesNextOffer){
-    fire([c.accept],function(){
-      addSys("Deal reached at $"+p+" in round "+round);
-      done=true; enInp(false);
-      document.getElementById("stnote").textContent="Deal at $"+p;
-      document.getElementById("hbadge").textContent="Deal at $"+p;
-      save(p,round,true);
+  if(p<=currentCeiling){
+    var confirmPrice=p;
+    var isHedgedH=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+    var confirmMsg=isHedgedH
+      ?"so we possibly have a deal at $"+confirmPrice+"? just want to make sure we're on the same page!"
+      :"so we have a deal at $"+confirmPrice+"?";
+    fire([confirmMsg],function(){
+      awaitingDealConfirm=true; pendingDealPrice=confirmPrice;
+      enInp(true); startInact();
     },false); return;
   }
   if(si<c.steps.length-1){
@@ -563,11 +572,6 @@ function handle(txt,preP) {
     }
     var lines=parseStep(c.steps[si]); si++;
     // If seller asking above highball threshold, acknowledge before countering
-    var isHedged=CONDITION.toLowerCase().indexOf("hedged")!==-1;
-    if(p>HIGHBALL && lines.length>0){
-      var ack=isHedged?"I think that's still a bit high for me — ":"that's still too high — ";
-      lines[0]=ack+lines[0].charAt(0).toLowerCase()+lines[0].slice(1);
-    }
     fire(lines,function(){enInp(true);startInact();},true); return;
   }
   var exitLines=parseStep(c.steps[c.steps.length-1]);
@@ -576,33 +580,29 @@ function handle(txt,preP) {
 
 // ── SAVE ──────────────────────────────────────────────────────
 function save(price,rnd,reached) {
-  var transcript = chatLog.map(function(e){
+  var transcript=chatLog.map(function(e){
     if(e.speaker==="system") return null;
-    var name = e.speaker==="buyer" ? C().name : "You";
-    var time = new Date(e.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    var name=e.speaker==="buyer"?C().name:"You";
+    var time=new Date(e.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
     return name+" ("+time+"): "+e.msg;
   }).filter(Boolean).join("\n");
-
-  // postMessage to parent Qualtrics page
   try {
     window.parent.postMessage({
-      type:            "CHATBOT_COMPLETE",
-      deal_price:      String(price||"0"),
-      deal_round:      String(rnd||"0"),
-      deal_reached:    reached?"1":"0",
-      chat_log:        JSON.stringify(chatLog),
-      chat_transcript: transcript,
-      condition:       CONDITION
-    }, "*");
+      type:"CHATBOT_COMPLETE",
+      deal_price:String(price||"0"),
+      deal_round:String(rnd||"0"),
+      deal_reached:reached?"1":"0",
+      chat_log:JSON.stringify(chatLog),
+      chat_transcript:transcript,
+      condition:CONDITION
+    },"*");
   } catch(e) {}
-
-  // Direct Qualtrics API fallback
   try {
-    Qualtrics.SurveyEngine.setEmbeddedData("deal_price",     String(price||"0"));
-    Qualtrics.SurveyEngine.setEmbeddedData("deal_round",     String(rnd||"0"));
-    Qualtrics.SurveyEngine.setEmbeddedData("deal_reached",   reached?"1":"0");
-    Qualtrics.SurveyEngine.setEmbeddedData("chat_log",       JSON.stringify(chatLog));
-    Qualtrics.SurveyEngine.setEmbeddedData("chat_transcript", transcript);
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_price",String(price||"0"));
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_round",String(rnd||"0"));
+    Qualtrics.SurveyEngine.setEmbeddedData("deal_reached",reached?"1":"0");
+    Qualtrics.SurveyEngine.setEmbeddedData("chat_log",JSON.stringify(chatLog));
+    Qualtrics.SurveyEngine.setEmbeddedData("chat_transcript",transcript);
   } catch(e) {}
 }
 
@@ -638,14 +638,16 @@ async function classifyIntent(message) {
 
   try {
     // Call Python backend — API key stays in .env, never in browser
-    var resp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/classify", {
+    var resp = await fetch("/classify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message:    message,
         round:      round,
         isFirst:    isFirst,
-        hedgeWords: hedgeContext
+        hedgeWords: hedgeContext,
+        history:    chatLog,
+        lastOffer:  lastBuyerOffer
       })
     });
 
@@ -678,6 +680,59 @@ async function capture() {
   // Show typing dots immediately while LLM classifies (feels responsive)
   typing(true);
 
+  // ── DEAL CONFIRMATION — runs first ──
+  if (awaitingDealConfirm) {
+    awaitingDealConfirm = false;
+    var CONFIRM_KW2=["yes","yeah","yep","yup","sure","ok","okay","deal","agreed",
+      "sounds good","that works","confirmed","right","definitely","done","sold",
+      "fine","alright","yea","of course","i agree","let's do it","lets do it",
+      "i accept","works for me","you got it","perfect","great"];
+    var DENY_KW2=["no","nope","wait","actually","cancel","nevermind","never mind",
+      "hold on","i didn't","i do not","i dont","that's not","incorrect","wrong",
+      "change my mind","rethink","hell no","no way","not yet","not quite"];
+    var isConfirm2=CONFIRM_KW2.some(function(w){ return rawLower.trim()===w||rawLower.indexOf(w)!==-1; });
+    var isDeny2=DENY_KW2.some(function(w){ return rawLower.indexOf(w)!==-1; });
+    // If message has a price with confirm/deny word, treat as new price offer
+    var confirmWithPrice=vp(px(raw));
+    if (confirmWithPrice!==null&&confirmWithPrice!==pendingDealPrice) {
+      typing(false); awaitingDealConfirm=false; handle(raw,confirmWithPrice); return;
+    }
+    var mathMult2=0;
+    if (/(double|twice|2x)/i.test(raw)) mathMult2=2;
+    else if (/(triple|thrice|3x)/i.test(raw)) mathMult2=3;
+    else if (/(quadruple|4x)/i.test(raw)) mathMult2=4;
+    else if (/(quintuple|5x)/i.test(raw)) mathMult2=5;
+    else { var tmC=raw.match(/times\s*(\d+)/i); if(tmC) mathMult2=parseFloat(tmC[1]); }
+    if (mathMult2>0) {
+      var mathP2=vp(pendingDealPrice*mathMult2);
+      if (mathP2){ typing(false); handle(raw,mathP2); return; }
+    }
+    var denyPrice2=vp(px(raw));
+    if (isDeny2&&denyPrice2!==null){ typing(false); handle(raw,denyPrice2); return; }
+    if (isDeny2&&!isConfirm2) {
+      typing(false);
+      var isHD2=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+      fire([isHD2?"ok, what price might possibly work for you then?":"ok, what price works for you then?"],
+        function(){ enInp(true); startInact(); },false); return;
+    }
+    if (isConfirm2) {
+      var dp2=pendingDealPrice; typing(false);
+      fire([C().accept],function(){
+        addSys("Deal reached at $"+dp2+" in round "+round);
+        done=true; enInp(false);
+        document.getElementById("stnote").textContent="Deal at $"+dp2;
+        document.getElementById("hbadge").textContent="Deal at $"+dp2;
+        save(dp2,round,true);
+      },false); return;
+    }
+    var ambigPrice2=vp(px(raw));
+    if (ambigPrice2!==null){ typing(false); handle(raw,ambigPrice2); return; }
+    typing(false);
+    var isHA2=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+    fire([isHA2?"just to confirm — are we possibly agreeing on $"+pendingDealPrice+"?":"just to confirm — deal at $"+pendingDealPrice+"?"],
+      function(){ awaitingDealConfirm=true; enInp(true); startInact(); },false); return;
+  }
+
   // Greeting detection in JS — faster and more reliable than LLM for simple greetings
   // Only on first seller turn (round===1 && si===2)
   var GREET_KW = ["hi ","hi!","hey ","hey!","hello","howdy","hiya","good morning",
@@ -700,10 +755,11 @@ async function capture() {
     fire([pk(c.identity,gc)],function(){gc++;enInp(true);startInact();},false);
     return;
   }
-  // Don't fire greeting if message also contains accept/price intent words
-  var GREET_OVERRIDE_KW = ["accept","deal","sold","agree","take it","works","ok","done",
-    "sure","fine","yes","offer","price","selling","how much","want","buy"];
-  var hasOtherIntent = GREET_OVERRIDE_KW.some(function(w){ return rawLower.indexOf(w)!==-1; });
+  var GREET_OVERRIDE_KW=["accept","deal","sold","agree","take it","works","ok","done",
+    "sure","fine","yes","offer","price","selling","how much","want","buy",
+    "unfortunately","too low","too high","not enough","absolute max","maximum",
+    "highest","can't","cannot","won't","not willing","another offer","someone else"];
+  var hasOtherIntent=GREET_OVERRIDE_KW.some(function(w){ return rawLower.indexOf(w)!==-1; });
   if (isFirstTurn && !hasIdentity && !hasSuspicion && !hasOtherIntent && GREET_KW.some(function(w){ return rawLower.indexOf(w)!==-1; })) {
     var ep=vp(pxFromGreeting(raw));
     if (ep!==null) { typing(false); handle(raw,ep); return; }
@@ -718,21 +774,22 @@ async function capture() {
     return;
   }
 
-  // Simple accept words — check before LLM to avoid misclassification
-  var ACCEPT_KW = ["done","deal","sold","agreed","yes","ok","okay","fine","sure",
+  // Simple accept — confirm first
+  var ACCEPT_KW=["done","deal","sold","agreed","yes","ok","okay","fine","sure",
     "sounds good","works for me","i'll take it","ill take it","i accept","perfect",
-    "great","that works","let's do it","lets do it"];
-  var isSimpleAccept = ACCEPT_KW.some(function(w){ return rawLower.trim()===w || rawLower.trim()===w+"!"; });
-  if (isSimpleAccept && lastBuyerOffer > 0) {
-    var da = lastBuyerOffer;
+    "great","that works","let's do it","lets do it",
+    "thats what i said","that's what i said","thats right","that's right",
+    "exactly","correct","precisely","yes that","yep that","yeah that",
+    "thats it","that's it","thats the one","thats my","that's my",
+    "i know","i just said","as i said","like i said","as i mentioned"];
+  var isSimpleAccept=ACCEPT_KW.some(function(w){ return rawLower.trim()===w||rawLower.trim()===w+"!"; });
+  var simpleAcceptHasPrice=vp(px(raw))!==null;
+  if (isSimpleAccept&&!simpleAcceptHasPrice&&lastBuyerOffer>0&&round>0&&!awaitingDealConfirm) {
+    var da=lastBuyerOffer;
+    var isHedgedA=CONDITION.toLowerCase().indexOf("hedged")!==-1;
     typing(false);
-    fire([c.accept], function(){
-      addSys("Deal reached at $"+da+" in round "+round);
-      done=true; enInp(false);
-      document.getElementById("stnote").textContent="Deal at $"+da;
-      document.getElementById("hbadge").textContent="Deal at $"+da;
-      save(da, round, true);
-    }, false);
+    fire([isHedgedA?"so we possibly have a deal at $"+da+"? just want to make sure!":"so we have a deal at $"+da+"?"],
+      function(){ awaitingDealConfirm=true; pendingDealPrice=da; enInp(true); startInact(); },false);
     return;
   }
 
@@ -740,9 +797,42 @@ async function capture() {
   var sayMatch=rawLower.match(/^(?:say|type)\s+([a-z]{3,})$/);
   if (sayMatch) { fire([sayMatch[1]+"! Anyway, shall we get back to the price?"],function(){enInp(true);startInact();},false); return; }
 
-  // Walkaway confirmation — deterministic negation check first
+  // Relative math — "add 25 more", "go up 25" = lastBuyerOffer + X
+  // BUT NOT when it's a comparison like "only $5 higher than your offer"
+  var relMatch = raw.match(/\b(?:add|go up|increase|raise|bump)(?:\s+(?:by|it|up))?\s+\$?(\d+)(?:\s+more)?\b/i);
+  var isComparisonPhrase = /only\s+\$?\d+\s*(more|higher|less)/i.test(raw)
+    || /just\s+\$?\d+\s*(more|higher|less)/i.test(raw)
+    || /\$?\d+\s*(more|higher)\s+than/i.test(raw)
+    || /means.*only/i.test(raw)
+    || /less than a/i.test(raw);
+  if (relMatch && !isComparisonPhrase) {
+    var relPrice = vp(lastBuyerOffer + parseFloat(relMatch[1]));
+    if (relPrice) { typing(false); handle(raw, relPrice); return; }
+  }
+
+  // Math expressions — pure JS
+  var mathMultiplier=0;
+  if (/\b(double|twice|2x|two times)\b/i.test(raw))         mathMultiplier=2;
+  else if (/\b(triple|thrice|3x|three times)\b/i.test(raw)) mathMultiplier=3;
+  else if (/\b(quadruple|4x|four times)\b/i.test(raw))      mathMultiplier=4;
+  else if (/\b(quintuple|5x|five times)\b/i.test(raw))      mathMultiplier=5;
+  else if (/\b(sextuple|6x|six times)\b/i.test(raw))        mathMultiplier=6;
+  else {
+    var tmM=raw.match(/\btimes\s*(\d+)/i)||raw.match(/\bmultiply.{0,10}by\s*(\d+)/i);
+    if (tmM) mathMultiplier=parseFloat(tmM[1]);
+  }
+  if (mathMultiplier>0) {
+    var mathPrice=vp(lastBuyerOffer*mathMultiplier);
+    if (mathPrice){ typing(false); handle(raw,mathPrice); return; }
+  }
+  var xmM=raw.match(/(\d+)\s*[x\*]\s*(\d+)/i);
+  if (xmM){ typing(false); handle(raw,vp(parseFloat(xmM[1])*parseFloat(xmM[2]))); return; }
+
+  // Walkaway — re-engage if price given
   if (awaitingWalkawayConfirm) {
     awaitingWalkawayConfirm=false; lastSellerPrice=null;
+    var walkPrice=vp(px(raw));
+    if (walkPrice!==null){ handle(raw,walkPrice); return; }
     var NEGATE=["no i don","no i dont","no wait","no actually","no no ","never mind",
       "i want to continue","keep going","not done","no let",
       "i don't want to end","i dont want to end","wait no","no i want"];
@@ -765,20 +855,94 @@ async function capture() {
   // e.g. "why did you say 70", "i want to know why 85", "explain 70 to me"
   // These should go to LLM not be parsed as price offers
   var questionPatterns = [
-    /why.{0,30}\d/i,           // "why...70", "why did you say 70"
-    /know why/i,               // "want to know why"
-    /you say \d/i,             // "why did you say 70"
-    /said \d/i,                // "you said 70"
-    /explain.{0,20}\d/i,       // "explain 70"
-    /what.{0,10}mean.{0,10}\d/i // "what do you mean by 70"
+    /\d+\s*%/i, /percent/i, /100%/i,
+    /paid for/i, /paid \d/i,
+    /lower than what/i, /more than what/i, /less than what/i,
+    /can.?t.{0,15}\d/i, /cannot.{0,15}\d/i, /won.?t.{0,15}\d/i,
+    /not.{0,10}(below|under|lower).{0,10}\d/i,
+    /already have someone/i, /someone ready to buy/i, /someone offering/i,
+    /someone is offering/i, /someone offered/i, /person offering/i,
+    /another person/i, /another buyer/i, /another offer/i, /other offer/i,
+    /someone else/i, /got an offer/i, /received.{0,10}offer/i, /elsewhere/i,
+    /buyer offering/i, /buyer at/i, /buyer for/i, /offers me/i,
+    /offering me/i, /offered me/i, /offer of/i,
+    /absolute max/i, /maximum.{0,15}(willing|offer|go)/i,
+    /highest.{0,15}(willing|offer|go)/i, /how high.{0,10}(go|offer)/i,
+    /face value/i, /original price/i, /retail/i, /worth \d/i, /worth \$\d/i,
+    /cost me/i, /bought.{0,10}for/i, /purchased for/i,
+    /double/i, /triple/i, /thrice/i, /twice/i,
+    /multipl/i, /times \d/i, /half of/i, /fraction/i,
+    /\d+ (days?|hours?|weeks?|months?)/i,
+    /\d+ tickets?/i, /\d+ people/i, /seat \d/i, /row \d/i,
+    /why.{0,30}\d/i, /know why/i, /you say \d/i,
+    /explain.{0,20}\d/i, /what.{0,10}mean.{0,10}\d/i
   ];
   var isQuestion = questionPatterns.some(function(p){ return p.test(raw); });
   var quickPrice = isQuestion ? null : vp(px(raw));
-  if (quickPrice!==null) {
+  var DENIAL_WITH_PRICE=["not ","can't","cannot","won't","wont",
+    "too low","not enough","way too","still too","refuse","no chance","no way",
+    "not willing","not going","never","absolutely not","unfortunately",
+    "just ","only ","its only","it's only",
+    "no i ","no that","no the","no its","no it's","no we","no you","no way",
+    "nope","not going","not willing","not doing","not accepting"];
+  var QUESTION_TO_BOT=["can you match","can you go","can you do","could you match",
+    "could you go","could you do","will you go","would you go","go any higher",
+    "go higher than","do better than","beat that","match that","meet that",
+    "any number higher","any price higher","anything higher","number higher than",
+    "higher than that","higher than my"];
+  var isQuestionToBot=QUESTION_TO_BOT.some(function(w){ return rawLower.indexOf(w)!==-1; });
+  var hasDenialWithPrice=quickPrice!==null&&(
+    DENIAL_WITH_PRICE.some(function(w){ return rawLower.indexOf(w)!==-1; })||isQuestionToBot
+  );
+  if (quickPrice!==null&&!hasDenialWithPrice) {
     var dbg2=document.getElementById("debug-intent");
     if(dbg2) dbg2.textContent="JS: PRICE $"+quickPrice;
     console.log("[JS] price detected:", quickPrice);
     typing(false); handle(raw,quickPrice); return;
+  }
+
+  // JS pre-check — clear WHY patterns LLM keeps misclassifying
+  var CLEAR_WHY=["absolute max","maximum you","highest you will","how high will",
+    "unfortunately","too low for me","way too low","far too low",
+    "100% of","percent of the price","can't go lower","cannot go lower",
+    "won't go lower","not go lower","minimum is","no less than","not less than",
+    "lower than what i paid","lower than what","paid for","can not go lower",
+    "below what i paid","below cost","at a loss","losing money","paid more than",
+    "already have someone","someone ready to buy","another buyer","another offer",
+    "someone offering","someone is offering","someone offered","offering me",
+    "offered me","offers me","buyer offering","person offering","someone else",
+    "got an offer","a bit low","too low",
+    "that's low","thats low","bit low",
+    "can you go higher","go higher than","higher than that","go any higher",
+    "any higher","please go higher","go up a bit","come up a bit",
+    "only \$","just \$","only a","just a","less than a","that's less","thats less",
+    "means it's only","means its only","only 5","only 10","only 15","only 20",
+    "only 25","only 30","difference is","that's just"];
+  var isClearWhy=CLEAR_WHY.some(function(w){ return rawLower.indexOf(w)!==-1; });
+  if (isClearWhy) {
+    typing(false);
+    var isMaxJQ=["absolute max","maximum you","highest you will","how high will"].some(function(w){ return rawLower.indexOf(w)!==-1; });
+    var isCompetingJQ=["already have someone","someone ready","another buyer","another offer",
+      "someone offering","someone else","got an offer"].some(function(w){ return rawLower.indexOf(w)!==-1; });
+    if (isCompetingJQ) {
+      var compPJQ=vp(px(raw.replace(/%/g,"")));
+      var isHedgedJQ=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+      if (compPJQ!==null) {
+        var compMsgJQ;
+        if (compPJQ>lastBuyerOffer) compMsgJQ=isHedgedJQ?"that's possibly your call — but I think I'm only at $"+lastBuyerOffer+" right now.":"that's your call — I'm only at $"+lastBuyerOffer+". go with what works for you.";
+        else if (compPJQ===lastBuyerOffer) compMsgJQ=isHedgedJQ?"that's possibly your call! I'm also at $"+lastBuyerOffer+" — go with whoever you prefer.":"that's your call — my offer is also $"+lastBuyerOffer+". go with whoever you prefer.";
+        else compMsgJQ=isHedgedJQ?"actually, I think I'm possibly offering more — I'm at $"+lastBuyerOffer+"! that might be a better deal for you.":"actually I'm offering more — I'm at $"+lastBuyerOffer+"! that's a better deal for you.";
+        fire([compMsgJQ],function(){ enInp(true); startInact(); },false);
+      } else {
+        var noCompMsgJQ=isHedgedJQ?"that's possibly your call! I'm still thinking around $"+lastBuyerOffer+" if you'd want to go with me.":"that's your call! my offer of $"+lastBuyerOffer+" is still on the table.";
+        fire([noCompMsgJQ],function(){ enInp(true); startInact(); },false);
+      }
+    } else if (isMaxJQ&&c.maxQuestion) {
+      fire([pk(c.maxQuestion,wrc).replace(/AMOUNT/g,"$"+lastBuyerOffer)],function(){wrc++;enInp(true);startInact();},false);
+    } else {
+      fire([pk(c.whyreason,wrc).replace(/AMOUNT/g,"$"+lastBuyerOffer)],function(){wrc++;enInp(true);startInact();},false);
+    }
+    return;
   }
 
   // Classify with LLM
@@ -787,7 +951,7 @@ async function capture() {
 
   switch(intent) {
     case "GREETING":
-      if (round===1&&si===1) {
+      if (round===1&&si===2) {
         var ep=vp(pxFromGreeting(raw));
         if(ep!==null){handle(raw,ep);return;}
         fire([pk(c.greeting,gc)],function(){gc++;enInp(true);startInact();},false);
@@ -796,15 +960,11 @@ async function capture() {
       }
       break;
     case "ACCEPT":
-      if (lastBuyerOffer>0) {
+      if (lastBuyerOffer>0&&round>0) {
         var da=lastBuyerOffer;
-        fire([c.accept],function(){
-          addSys("Deal reached at $"+da+" in round "+round);
-          done=true; enInp(false);
-          document.getElementById("stnote").textContent="Deal at $"+da;
-          document.getElementById("hbadge").textContent="Deal at $"+da;
-          save(da,round,true);
-        },false);
+        var isHedgedL=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+        fire([isHedgedL?"so we possibly have a deal at $"+da+"? just want to make sure!":"so we have a deal at $"+da+"?"],
+          function(){ awaitingDealConfirm=true; pendingDealPrice=da; enInp(true); startInact(); },false);
       } else { fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false); }
       break;
     case "SUSPICION":
@@ -821,42 +981,41 @@ async function capture() {
       }
       break;
     case "WHY":
-      fire([pk(c.whyreason,wrc)],function(){wrc++;enInp(true);startInact();},false); break;
+      var hasCompetingOffer2=["another offer","other offer","someone else","another buyer",
+        "other buyer","another person","someone offering","already have someone",
+        "someone to buy","someone ready","got an offer","someone at","buyer at"].some(function(w){ return rawLower.indexOf(w)!==-1; });
+      var isMaxQ=["absolute max","maximum","highest you","how high","best you can do",
+        "top price","ceiling","most you","furthest"].some(function(w){ return rawLower.indexOf(w)!==-1; });
+      if (isMaxQ&&c.maxQuestion) {
+        fire([pk(c.maxQuestion,wrc).replace(/AMOUNT/g,"$"+lastBuyerOffer)],function(){wrc++;enInp(true);startInact();},false); break;
+      }
+      if (hasCompetingOffer2) {
+        var compP=vp(px(raw.replace(/%/g,"")));
+        var isHedgedW=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+        if (compP!==null) {
+          var compMsg;
+          if (compP>lastBuyerOffer) compMsg=isHedgedW?"that's possibly your call — but I think I'm only at $"+lastBuyerOffer+" right now.":"that's your call — I'm only at $"+lastBuyerOffer+". go with what works for you.";
+          else if (compP===lastBuyerOffer) compMsg=isHedgedW?"that's possibly your call! I'm also at $"+lastBuyerOffer+" — go with whoever you prefer.":"that's your call — my offer is also $"+lastBuyerOffer+". go with whoever you prefer.";
+          else compMsg=isHedgedW?"actually, I think I'm possibly offering more — I'm at $"+lastBuyerOffer+"! that might be a better deal for you.":"actually I'm offering more — I'm at $"+lastBuyerOffer+"! that's a better deal for you.";
+          fire([compMsg],function(){ enInp(true); startInact(); },false); break;
+        }
+        var isHedgedW2=CONDITION.toLowerCase().indexOf("hedged")!==-1;
+        fire([isHedgedW2?"that's possibly your call! I'm still thinking around $"+lastBuyerOffer+" if you'd want to go with me.":"that's your call! my offer of $"+lastBuyerOffer+" is still on the table."],function(){ enInp(true); startInact(); },false); break;
+      }
+      fire([pk(c.whyreason,wrc).replace(/AMOUNT/g,"$"+lastBuyerOffer)],function(){wrc++;enInp(true);startInact();},false); break;
     case "REITERATE":
       if(round>0){fire([buildReiterateMsg(c)],function(){rc++;enInp(true);startInact();},false);}
       else{fire([pk(c.nudges,nc)],function(){nc++;enInp(true);startInact();},false);}
       break;
     case "OFFTOPIC":
-      // Let LLM generate a natural in-character reply
-      (async function() {
-        try {
-          var resp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/respond", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              message:   raw,
-              condition: CONDITION,
-              round:     round,
-              lastOffer: lastBuyerOffer
-            })
-          });
-          var data = await resp.json();
-          var reply = data.reply || pk(c.offtopic, oc);
-          typing(false);
-          fire([reply], function(){ oc++; enInp(true); startInact(); }, false);
-        } catch(e) {
-          // Fallback to scripted if server fails
-          typing(false);
-          fire([pk(c.offtopic,oc)], function(){ oc++; enInp(true); startInact(); }, false);
-        }
-      })();
+      fire([pk(c.offtopic,oc)],function(){ oc++; enInp(true); startInact(); },false);
       break;
     case "PRICE":
       // JS parser missed it — ask LLM to extract the number from natural language
       // e.g. "not a penny under 115", "a hundred and twenty", "my floor is 110"
       (async function() {
         try {
-          var priceResp = await fetch("https://agrawaltoshini-negotiation-chatbot.hf.space/extract_price", {
+          var priceResp = await fetch("/extract_price", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: raw })
@@ -888,35 +1047,26 @@ function condUI() {
   var c=C();
   document.getElementById("hname").textContent=c.name;
   document.getElementById("rpill").textContent=CONDITION.replace("_"," / ");
-
-  var isNancy  = c.name === "Nancy";
-  var avBorder = isNancy ? "#f9a8d4" : "#93c5fd";
-  var imgUrl   = isNancy
-    ? "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxlbGxpcHNlIGN4PSI1MCIgY3k9IjM4IiByeD0iMjUiIHJ5PSIyOCIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSIzMiIgY3k9IjU4IiByeD0iOSIgcnk9IjI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjY4IiBjeT0iNTgiIHJ4PSI5IiByeT0iMjciIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iMjgiIGN5PSI3OCIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjMWExYTFhIi8+CiAgPGVsbGlwc2UgY3g9IjM3IiBjeT0iODMiIHJ4PSI3IiByeT0iNyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI3MiIgY3k9Ijc4IiByeD0iOCIgcnk9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8ZWxsaXBzZSBjeD0iNjMiIGN5PSI4MyIgcng9IjciIHJ5PSI3IiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iMzYiIHk9IjcyIiB3aWR0aD0iMjgiIGhlaWdodD0iMzAiIHJ4PSI4IiBmaWxsPSIjZDRiODk2Ii8+CiAgPHJlY3QgeD0iNDQiIHk9IjY1IiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI1MCIgeTE9IjIyIiB4Mj0iNTAiIHkyPSIzMSIgc3Ryb2tlPSIjMmEyYTJhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjY4IiBjeT0iMzMiIHJ4PSI1IiByeT0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxsaW5lIHgxPSI0MCIgeTE9IjQ2IiB4Mj0iMzgiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNDMiIHkxPSI0NSIgeDI9IjQzIiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjQ2IiB5MT0iNDYiIHgyPSI0NyIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxsaW5lIHgxPSI1NCIgeTE9IjQ2IiB4Mj0iNTMiIHkyPSI0NCIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8bGluZSB4MT0iNTciIHkxPSI0NSIgeDI9IjU3IiB5Mj0iNDMiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGxpbmUgeDE9IjYwIiB5MT0iNDYiIHgyPSI2MiIgeTI9IjQ0IiBzdHJva2U9IiMxYTFhMWEiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1NyBRNTAgNjMgNTYgNTciIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4="
-    : "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPgogIDxyZWN0IHg9IjIyIiB5PSI3MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjMwIiByeD0iOCIgZmlsbD0iIzFlM2E1ZiIvPgogIDxyZWN0IHg9IjQ2IiB5PSI3MiIgd2lkdGg9IjgiIGhlaWdodD0iMTgiIGZpbGw9IiNmZmYiLz4KICA8cG9seWdvbiBwb2ludHM9IjUwLDc0IDQ3LDg0IDUzLDg0IiBmaWxsPSIjYmUxODVkIi8+CiAgPHJlY3QgeD0iNDQiIHk9IjYyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPgogIDxyZWN0IHg9IjMwIiB5PSIzMSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIGZpbGw9IiMxYTFhMWEiLz4KICA8cmVjdCB4PSIzMCIgeT0iMzkiIHdpZHRoPSI2IiBoZWlnaHQ9IjkiIHJ4PSIzIiBmaWxsPSIjMWExYTFhIi8+CiAgPHJlY3QgeD0iNjQiIHk9IjM5IiB3aWR0aD0iNiIgaGVpZ2h0PSI5IiByeD0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik00NCA1OCBRNTAgNjUgNTYgNTgiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4=";
-
-  ["hav","tav"].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = "";
-    var img = document.createElement("img");
-    img.src = imgUrl;
-    img.width = id === "hav" ? 38 : 26;
-    img.height = id === "hav" ? 38 : 26;
-    img.style.cssText = "border-radius:50%;object-fit:cover;display:block;";
+  var isNancy=c.name==="Nancy";
+  var imgUrl=isNancy?"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPjxlbGxpcHNlIGN4PSI1MCIgY3k9IjM4IiByeD0iMjUiIHJ5PSIyOCIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjU4IiByeD0iOSIgcnk9IjI3IiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjY4IiBjeT0iNTgiIHJ4PSI5IiByeT0iMjciIGZpbGw9IiMxYTFhMWEiLz48ZWxsaXBzZSBjeD0iMjgiIGN5PSI3OCIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjM3IiBjeT0iODMiIHJ4PSI3IiByeT0iNyIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSI3MiIgY3k9Ijc4IiByeD0iOCIgcnk9IjgiIGZpbGw9IiMxYTFhMWEiLz48ZWxsaXBzZSBjeD0iNjMiIGN5PSI4MyIgcng9IjciIHJ5PSI3IiBmaWxsPSIjMWExYTFhIi8+PHJlY3QgeD0iMzYiIHk9IjcyIiB3aWR0aD0iMjgiIGhlaWdodD0iMzAiIHJ4PSI4IiBmaWxsPSIjZDRiODk2Ii8+PHJlY3QgeD0iNDQiIHk9IjY1IiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPjxsaW5lIHgxPSI1MCIgeTE9IjIyIiB4Mj0iNTAiIHkyPSIzMSIgc3Ryb2tlPSIjMmEyYTJhIiBzdHJva2Utd2lkdGg9IjEuNSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzMiIHI9IjUiIGZpbGw9IiMxYTFhMWEiLz48Y2lyY2xlIGN4PSI2OCIgY3k9IjMzIiByPSI1IiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjQzIiBjeT0iNDkiIHJ4PSIzLjUiIHJ5PSIzIiBmaWxsPSIjMWExYTFhIi8+PGVsbGlwc2UgY3g9IjU3IiBjeT0iNDkiIHJ4PSIzLjUiIHJ5PSIzIiBmaWxsPSIjMWExYTFhIi8+PGNpcmNsZSBjeD0iNDQiIGN5PSI0NyIgcj0iMS4yIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTgiIGN5PSI0NyIgcj0iMS4yIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTQ0IDU3IFE1MCA2MyA1NiA1NyIgc3Ryb2tlPSIjMWExYTFhIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2YwZWRlOCIvPjxyZWN0IHg9IjIyIiB5PSI3MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjMwIiByeD0iOCIgZmlsbD0iIzFlM2E1ZiIvPjxyZWN0IHg9IjQ2IiB5PSI3MiIgd2lkdGg9IjgiIGhlaWdodD0iMTgiIGZpbGw9IiNmZmYiLz48cG9seWdvbiBwb2ludHM9IjUwLDc0IDQ3LDg0IDUzLDg0IiBmaWxsPSIjYmUxODVkIi8+PHJlY3QgeD0iNDQiIHk9IjYyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSI1MCIgcng9IjIwIiByeT0iMjIiIGZpbGw9IiNmNWM1YTMiLz48ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMSIgcng9IjIwIiByeT0iOSIgZmlsbD0iIzFhMWExYSIvPjxyZWN0IHg9IjMwIiB5PSIzMSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIGZpbGw9IiMxYTFhMWEiLz48cmVjdCB4PSIzMCIgeT0iMzkiIHdpZHRoPSI2IiBoZWlnaHQ9IjkiIHJ4PSIzIiBmaWxsPSIjMWExYTFhIi8+PHJlY3QgeD0iNjQiIHk9IjM5IiB3aWR0aD0iNiIgaGVpZ2h0PSI5IiByeD0iMyIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSI0MyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSI1NyIgY3k9IjQ5IiByeD0iMy41IiByeT0iMyIgZmlsbD0iIzFhMWExYSIvPjxjaXJjbGUgY3g9IjQ0IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjU4IiBjeT0iNDciIHI9IjEuMiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik00NCA1OCBRNTAgNjUgNTYgNTgiIHN0cm9rZT0iIzFhMWExYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==";
+  var avBorder=isNancy?"#f9a8d4":"#93c5fd";
+  ["hav","tav"].forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    el.innerHTML="";
+    var img=document.createElement("img");
+    img.src=imgUrl; img.style.cssText="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;";
     el.appendChild(img);
-    el.style.background  = "transparent";
-    el.style.borderColor = avBorder;
-    el.style.padding     = "0";
-    el.style.overflow    = "hidden";
+    el.style.background="transparent"; el.style.borderColor=avBorder;
+    el.style.padding="0"; el.style.overflow="hidden";
   });
 }
-
 function reset() {
   round=0;si=1;done=false;submitOk=false;lastBuyerOffer=50;
   inactLvl=0;lastPrice=null;chatLog=[];
   nc=0;sc=0;ac=0;wc=0;wc2=0;oc=0;gc=0;rc=0;wrc=0;hc=0;rc2=0;
   awaitingWalkawayConfirm=false; lastSellerPrice=null;
+  awaitingDealConfirm=false; pendingDealPrice=0;
+  lastCompetingPrice=null;
   clearTimeout(inactTimer);clearTimeout(disconnectTimer);
   D.msgs.innerHTML="";D.inp.value="";typing(false);
   document.getElementById("stnote").textContent="";
@@ -949,21 +1099,18 @@ window.onload=function(){
     CONDITION=CONDITION_MAP[this.value]||this.value; reset();
   });
   document.getElementById("rbtn").addEventListener("click",reset);
-  // Show researcher bar only when accessed directly without condition param
   try {
-    var params = new URLSearchParams(window.location.search);
-    var inIframe = (window.self !== window.top);
-    if (!inIframe && params.get("condition") === null) {
-      var rbar = document.querySelector(".rbar");
-      if (rbar) rbar.style.display = "flex";
+    var params=new URLSearchParams(window.location.search);
+    var inIframe=(window.self!==window.top);
+    if (!inIframe&&params.get("condition")===null) {
+      var rb=document.querySelector(".rbar"); if(rb) rb.style.display="flex";
     }
   } catch(e) {}
-  // Sync dropdown to current condition, do NOT overwrite CONDITION
-  var condSel = document.getElementById("condSel");
+  var condSel=document.getElementById("condSel");
   if (condSel) {
-    for (var i=0; i<condSel.options.length; i++) {
-      if (CONDITION_MAP[condSel.options[i].value]===CONDITION || condSel.options[i].value===CONDITION) {
-        condSel.selectedIndex = i; break;
+    for (var i=0;i<condSel.options.length;i++) {
+      if (CONDITION_MAP[condSel.options[i].value]===CONDITION||condSel.options[i].value===CONDITION) {
+        condSel.selectedIndex=i; break;
       }
     }
   }
